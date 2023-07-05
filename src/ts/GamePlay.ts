@@ -1,16 +1,16 @@
-// import { calcHealthLevel, calcTileType } from "./utils";
+import { calcHealthLevel, calcTileType } from "./utils";
 
 export default class GamePlay {
   boardSize: number;
   container: HTMLElement | null;
   boardEl: any;
-  cells: any[];
+  cells: HTMLElement[];
   cellClickListeners: [];
   cellEnterListeners: [];
   cellLeaveListeners: [];
-  newGameListeners: [];
-  saveGameListeners: [];
-  loadGameListeners: [];
+  newGameListeners: EventListener[];
+  saveGameListeners: EventListener[];
+  loadGameListeners: EventListener[];
   [key: string]: any;
 
   constructor() {
@@ -26,7 +26,7 @@ export default class GamePlay {
     this.loadGameListeners = [];
   }
 
-  bindToDOM(container: HTMLElement) {
+  bindToDOM(container: HTMLElement | null) {
     if (!(container instanceof HTMLElement)) {
       throw new Error("container is not HTMLElement");
     }
@@ -72,7 +72,6 @@ export default class GamePlay {
       this.boardEl.classList.add(theme);
       for (let i = 0; i < this.boardSize ** 2; i += 1) {
         const cellEl = document.createElement("div");
-        // @ts-ignore
         cellEl.classList.add(
           "cell",
           "map-tile",
@@ -97,7 +96,7 @@ export default class GamePlay {
    *
    * @param positions array of PositionedCharacter objects
    */
-  redrawPositions(positions) {
+  redrawPositions(positions: any[]) {
     for (const cell of this.cells) {
       cell.innerHTML = "";
     }
@@ -128,7 +127,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addCellEnterListener(callback) {
+  addCellEnterListener(callback: never) {
     this.cellEnterListeners.push(callback);
   }
 
@@ -137,7 +136,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addCellLeaveListener(callback) {
+  addCellLeaveListener(callback: never) {
     this.cellLeaveListeners.push(callback);
   }
 
@@ -146,7 +145,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addCellClickListener(callback) {
+  addCellClickListener(callback: never) {
     this.cellClickListeners.push(callback);
   }
 
@@ -155,7 +154,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addNewGameListener(callback) {
+  addNewGameListener(callback: never): void {
     this.newGameListeners.push(callback);
   }
 
@@ -164,7 +163,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addSaveGameListener(callback: any) {
+  addSaveGameListener(callback: never) {
     this.saveGameListeners.push(callback);
   }
 
@@ -173,7 +172,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addLoadGameListener(callback: any) {
+  addLoadGameListener(callback: never): void {
     this.loadGameListeners.push(callback);
   }
 
@@ -223,7 +222,7 @@ export default class GamePlay {
   }
 
   deselectCell(index: number) {
-    const cell = this.cells[index];
+    const cell: HTMLElement = this.cells[index];
     cell.classList.remove(
       ...Array.from(cell.classList).filter((o) => o.startsWith("selected"))
     );
@@ -237,7 +236,7 @@ export default class GamePlay {
     this.cells[index].title = "";
   }
 
-  showDamage(index: number, damage: any) {
+  showDamage(index: number, damage: any): Promise<void> {
     return new Promise((resolve) => {
       const cell = this.cells[index];
       const damageEl = document.createElement("span");
