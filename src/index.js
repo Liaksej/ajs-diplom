@@ -1,3 +1,4 @@
+//eslint:disable-next-line
 import "./css/style.css";
 import "./ts/app";
 
