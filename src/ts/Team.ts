@@ -11,6 +11,7 @@
  * team.characters // [swordsman, bowman]
  * ```
  * */
+
 export default class Team {
   // TODO: write your logic here
 }

@@ -8,7 +8,7 @@
  * возвращает новый экземпляр класса персонажа
  *
  */
-export function* characterGenerator(allowedTypes: any, maxLevel: any) {
+export function* characterGenerator(allowedTypes: any, maxLevel: 4) {
   // TODO: write logic here
 }
 
@@ -22,7 +22,7 @@ export function* characterGenerator(allowedTypes: any, maxLevel: any) {
 export function generateTeam(
   allowedTypes: any,
   maxLevel: any,
-  characterCount: any
+  characterCount: any,
 ) {
   // TODO: write logic here
 }
