@@ -1,12 +1,15 @@
-/* eslint-env commonjs */
 const path = require("path");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+// const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
+  target: "web",
   output: {
     path: path.resolve(__dirname, "dist"),
+    publicPath: "",
   },
+  // devtool: "source-map",
   module: {
     rules: [
       {
@@ -33,11 +36,12 @@ module.exports = {
       },
       {
         test: /\.css$/,
+        include: path.resolve(__dirname, "src"),
         use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
       {
-        test: /\.(png|jpg|gif)$/i,
-        type: "asset",
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: "asset/resource",
       },
     ],
   },
