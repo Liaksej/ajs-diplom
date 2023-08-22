@@ -13,7 +13,7 @@
  * vampire
  */
 
-type CharacterType =
+export type CharacterType =
   | "generic"
   | "swordsman"
   | "bowman"
@@ -24,7 +24,10 @@ type CharacterType =
 
 export type LevelType = 1 | 2 | 3 | 4;
 
-interface CharacterInterface<T extends CharacterType, L extends LevelType> {
+export interface CharacterInterface<
+  T extends CharacterType,
+  L extends LevelType,
+> {
   level: L;
   attack: number;
   defence: number;
