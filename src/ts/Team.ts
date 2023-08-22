@@ -1,3 +1,4 @@
+import Character, { CharacterType, LevelType } from "./Character";
 /**
  * Класс, представляющий персонажей команды
  *
@@ -13,5 +14,8 @@
  * */
 
 export default class Team {
-  // TODO: write your logic here
+  characters: Character<CharacterType, LevelType>[];
+  constructor(characters: Character<CharacterType, LevelType>[]) {
+    this.characters = characters;
+  }
 }
