@@ -1,4 +1,5 @@
 import { calcHealthLevel, calcTileType } from "./utils";
+import PositionedCharacter from "./PositionedCharacter";
 
 export default class GamePlay {
   boardSize: number;
@@ -58,13 +59,13 @@ export default class GamePlay {
       this.loadGameEl = this.container.querySelector("[data-id=action-load]");
 
       this.newGameEl.addEventListener("click", (event: Event) =>
-        this.onNewGameClick(event)
+        this.onNewGameClick(event),
       );
       this.saveGameEl.addEventListener("click", (event: Event) =>
-        this.onSaveGameClick(event)
+        this.onSaveGameClick(event),
       );
       this.loadGameEl.addEventListener("click", (event: Event) =>
-        this.onLoadGameClick(event)
+        this.onLoadGameClick(event),
       );
 
       this.boardEl = this.container.querySelector("[data-id=board]");
@@ -75,13 +76,13 @@ export default class GamePlay {
         cellEl.classList.add(
           "cell",
           "map-tile",
-          `map-tile-${calcTileType(i, this.boardSize)}`
+          `map-tile-${calcTileType(i, this.boardSize)}`,
         );
         cellEl.addEventListener("mouseenter", (event) =>
-          this.onCellEnter(event)
+          this.onCellEnter(event),
         );
         cellEl.addEventListener("mouseleave", (event) =>
-          this.onCellLeave(event)
+          this.onCellLeave(event),
         );
         cellEl.addEventListener("click", (event) => this.onCellClick(event));
         this.boardEl.appendChild(cellEl);
@@ -96,7 +97,7 @@ export default class GamePlay {
    *
    * @param positions array of PositionedCharacter objects
    */
-  redrawPositions(positions: any[]) {
+  redrawPositions(positions: PositionedCharacter[]) {
     for (const cell of this.cells) {
       cell.innerHTML = "";
     }
@@ -112,7 +113,7 @@ export default class GamePlay {
       const healthIndicatorEl = document.createElement("div");
       healthIndicatorEl.classList.add(
         "health-level-indicator",
-        `health-level-indicator-${calcHealthLevel(position.character.health)}`
+        `health-level-indicator-${calcHealthLevel(position.character.health)}`,
       );
       healthIndicatorEl.style.width = `${position.character.health}%`;
       healthEl.appendChild(healthIndicatorEl);
@@ -224,7 +225,7 @@ export default class GamePlay {
   deselectCell(index: number) {
     const cell: HTMLElement = this.cells[index];
     cell.classList.remove(
-      ...Array.from(cell.classList).filter((o) => o.startsWith("selected"))
+      ...Array.from(cell.classList).filter((o) => o.startsWith("selected")),
     );
   }
 
