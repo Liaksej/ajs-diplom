@@ -1,5 +1,15 @@
-import Character, { CharacterType, LevelType } from "./Character";
+import Character, {
+  CharacterInterface,
+  CharacterType,
+  LevelType,
+} from "./Character";
 import Team from "./Team";
+import { Bowman } from "./characters/Bowman";
+import { Swordsman } from "./characters/Swordsman";
+import { Magican } from "./characters/Magican";
+import { Undead } from "./characters/Undead";
+import { Daemon } from "./characters/Daemon";
+import { Vampire } from "./characters/Vampire";
 
 /**
  * Формирует экземпляр персонажа из массива allowedTypes со
@@ -12,7 +22,14 @@ import Team from "./Team";
  *
  */
 
-type AllowedTypes = Character<CharacterType, LevelType>[];
+type AllowedTypes = Array<
+  | typeof Bowman
+  | typeof Swordsman
+  | typeof Magican
+  | typeof Undead
+  | typeof Daemon
+  | typeof Vampire
+>;
 
 export function* characterGenerator(
   allowedTypes: AllowedTypes,
@@ -20,9 +37,9 @@ export function* characterGenerator(
 ) {
   while (true) {
     const randomNumber = Math.floor(Math.random() * allowedTypes.length);
-    if (allowedTypes[randomNumber].level <= maxLevel) {
-      yield allowedTypes[randomNumber];
-    }
+    const randomLevel = Math.floor(Math.random() * maxLevel) as LevelType;
+    const character = new allowedTypes[randomNumber](randomLevel);
+    yield character;
   }
 }
 
@@ -38,7 +55,7 @@ export function generateTeam(
   maxLevel: LevelType,
   characterCount: number,
 ) {
-  const team: AllowedTypes = [];
+  const team: CharacterInterface<CharacterType, LevelType>[] = [];
   for (let i = 0; i < characterCount; i++) {
     characterGenerator(allowedTypes, maxLevel);
   }
