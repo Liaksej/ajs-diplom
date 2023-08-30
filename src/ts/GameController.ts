@@ -1,10 +1,9 @@
 import GamePlay from "./GamePlay";
 import themes from "./themes";
 import PositionedCharacter from "./PositionedCharacter";
-import Character, { CharacterType, LevelType } from "./Character";
 import { Bowman } from "./characters/Bowman";
 import { Swordsman } from "./characters/Swordsman";
-import { Magican } from "./characters/Magican";
+import { Magician } from "./characters/Magician";
 import { Undead } from "./characters/Undead";
 import { Vampire } from "./characters/Vampire";
 import { Daemon } from "./characters/Daemon";
@@ -57,7 +56,7 @@ export default class GameController {
   }
 
   creatGamerTeams(): PositionedCharacter[] {
-    const gamerAllowedTeamMembers = [Bowman, Swordsman, Magican];
+    const gamerAllowedTeamMembers = [Bowman, Swordsman, Magician];
     const gamerTeamCells = this.getTeamCells(this.gamePlay.boardSize, "gamer");
 
     const gamerTeam = generateTeam(gamerAllowedTeamMembers, 1, 3);

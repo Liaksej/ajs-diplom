@@ -6,7 +6,7 @@ import Character, {
 import Team from "./Team";
 import { Bowman } from "./characters/Bowman";
 import { Swordsman } from "./characters/Swordsman";
-import { Magican } from "./characters/Magican";
+import { Magician } from "./characters/Magician";
 import { Undead } from "./characters/Undead";
 import { Daemon } from "./characters/Daemon";
 import { Vampire } from "./characters/Vampire";
@@ -25,7 +25,7 @@ import { Vampire } from "./characters/Vampire";
 type AllowedTypes = Array<
   | typeof Bowman
   | typeof Swordsman
-  | typeof Magican
+  | typeof Magician
   | typeof Undead
   | typeof Daemon
   | typeof Vampire
