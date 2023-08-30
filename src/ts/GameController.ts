@@ -8,12 +8,13 @@ import { Undead } from "./characters/Undead";
 import { Vampire } from "./characters/Vampire";
 import { Daemon } from "./characters/Daemon";
 import { generateTeam } from "./generators";
+import GameStateService from "./GameStateService";
 
 export default class GameController {
   gamePlay: GamePlay;
-  stateService: any;
+  stateService: GameStateService;
 
-  constructor(gamePlay: GamePlay, stateService: any) {
+  constructor(gamePlay: GamePlay, stateService: GameStateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
   }
