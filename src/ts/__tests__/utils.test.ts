@@ -1,6 +1,6 @@
-import { calcTileType } from "./utils";
+import { calcTileType } from "../utils";
 
-it.each([
+test.each([
   ["top-left", [0, 8]],
   ["top-right", [7, 8]],
   ["top", [5, 7]],
