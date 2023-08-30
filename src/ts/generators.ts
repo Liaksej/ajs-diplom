@@ -57,10 +57,10 @@ export function generateTeam(
   maxLevel: LevelType,
   characterCount: number,
 ) {
-  const team: CharacterInterface<CharacterType, LevelType>[] = [];
+  const team: CharacterInterface[] = [];
+  const character = characterGenerator(allowedTypes, maxLevel);
   for (let i = 0; i < characterCount; i++) {
-    const character = characterGenerator(allowedTypes, maxLevel).next().value;
-    team.push(character!);
+    team.push(character.next().value);
   }
   return new Team(team);
 }
