@@ -4,7 +4,7 @@ import PositionedCharacter from "./PositionedCharacter";
 export default class GamePlay {
   boardSize: number;
   container: HTMLElement | null;
-  boardEl: any;
+  boardEl: HTMLElement | null;
   cells: HTMLElement[];
   cellClickListeners: [];
   cellEnterListeners: [];
@@ -70,7 +70,7 @@ export default class GamePlay {
 
       this.boardEl = this.container.querySelector("[data-id=board]");
 
-      this.boardEl.classList.add(theme);
+      this.boardEl?.classList.add(theme);
       for (let i = 0; i < this.boardSize ** 2; i += 1) {
         const cellEl = document.createElement("div");
         cellEl.classList.add(
@@ -85,10 +85,10 @@ export default class GamePlay {
           this.onCellLeave(event),
         );
         cellEl.addEventListener("click", (event) => this.onCellClick(event));
-        this.boardEl.appendChild(cellEl);
+        this.boardEl?.appendChild(cellEl);
       }
 
-      this.cells = Array.from(this.boardEl.children);
+      this.cells = Array.from(this.boardEl!.children) as HTMLElement[];
     }
   }
 
@@ -103,7 +103,7 @@ export default class GamePlay {
     }
 
     for (const position of positions) {
-      const cellEl = this.boardEl.children[position.position];
+      const cellEl = this.boardEl?.children[position.position];
       const charEl = document.createElement("div");
       charEl.classList.add("character", position.character.type);
 
@@ -119,7 +119,7 @@ export default class GamePlay {
       healthEl.appendChild(healthIndicatorEl);
 
       charEl.appendChild(healthEl);
-      cellEl.appendChild(charEl);
+      cellEl?.appendChild(charEl);
     }
   }
 
@@ -253,7 +253,7 @@ export default class GamePlay {
   }
 
   setCursor(cursor: string) {
-    this.boardEl.style.cursor = cursor;
+    this.boardEl!.style.cursor = cursor;
   }
 
   checkBinding() {
