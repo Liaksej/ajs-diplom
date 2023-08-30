@@ -21,8 +21,10 @@ export default class GameController {
 
   init() {
     this.gamePlay.drawUi(themes.prairie);
-    this.gamePlay.redrawPositions(this.creatEnemyTeams());
-    this.gamePlay.redrawPositions(this.creatGamerTeams());
+    this.gamePlay.redrawPositions([
+      ...this.creatEnemyTeams(),
+      ...this.creatGamerTeams(),
+    ]);
     // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
   }
@@ -46,10 +48,11 @@ export default class GameController {
     const enemyTeam = generateTeam(enemyAllowedTeamMembers, 1, 3);
 
     return enemyTeam.characters.map((enemyTeamMember) => {
-      return new PositionedCharacter(
-        enemyTeamMember,
-        enemyTeamCells[Math.floor(Math.random() * enemyTeamCells.length)],
-      );
+      const cell = enemyTeamCells.splice(
+        Math.floor(Math.random() * enemyTeamCells.length),
+        1,
+      )[0];
+      return new PositionedCharacter(enemyTeamMember, cell);
     });
   }
 
@@ -59,16 +62,17 @@ export default class GameController {
 
     const gamerTeam = generateTeam(gamerAllowedTeamMembers, 1, 3);
 
-    return gamerTeam.characters.map((enemyTeamMember) => {
-      return new PositionedCharacter(
-        enemyTeamMember,
-        gamerTeamCells[Math.floor(Math.random() * gamerTeamCells.length)],
-      );
+    return gamerTeam.characters.map((gamerTeamMember) => {
+      const cell = gamerTeamCells.splice(
+        Math.floor(Math.random() * gamerTeamCells.length),
+        1,
+      )[0];
+      return new PositionedCharacter(gamerTeamMember, cell);
     });
   }
 
   private getTeamCells(rowCells: number, role: string) {
-    let allCells = rowCells ** 2;
+    let allCells = rowCells ** 2 - 1;
     const teamCells = [];
     const rows = allCells / rowCells;
     for (let i = 0; i < rows; i++) {

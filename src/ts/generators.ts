@@ -38,7 +38,8 @@ export function* characterGenerator(
   while (true) {
     const randomNumber = Math.floor(Math.random() * allowedTypes.length);
     const randomLevel = Math.floor(Math.random() * maxLevel) as LevelType;
-    const character = new allowedTypes[randomNumber](randomLevel);
+    const character: CharacterInterface<CharacterType, LevelType> =
+      new allowedTypes[randomNumber](randomLevel);
     yield character;
   }
 }
@@ -57,7 +58,8 @@ export function generateTeam(
 ) {
   const team: CharacterInterface<CharacterType, LevelType>[] = [];
   for (let i = 0; i < characterCount; i++) {
-    characterGenerator(allowedTypes, maxLevel);
+    const character = characterGenerator(allowedTypes, maxLevel).next().value;
+    team.push(character!);
   }
   return new Team(team);
 }
