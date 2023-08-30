@@ -29,17 +29,17 @@ export default class GameController {
     // TODO: load saved stated from stateService
   }
 
-  onCellClick(index: number) {
-    // TODO: react to click
-  }
+  // onCellClick(index: number) {
+  //   // TODO: react to click
+  // }
 
-  onCellEnter(index: number) {
-    // TODO: react to mouse enter
-  }
+  // onCellEnter(index: number) {
+  //   // TODO: react to mouse enter
+  // }
 
-  onCellLeave(index: number) {
-    // TODO: react to mouse leave
-  }
+  // onCellLeave(index: number) {
+  //   // TODO: react to mouse leave
+  // }
 
   creatEnemyTeams(): PositionedCharacter[] {
     const enemyAllowedTeamMembers = [Undead, Vampire, Daemon];
