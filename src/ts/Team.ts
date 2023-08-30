@@ -14,8 +14,8 @@ import Character, { CharacterType, LevelType } from "./Character";
  * */
 
 export default class Team {
-  characters: Character<CharacterType, LevelType>[];
-  constructor(characters: Character<CharacterType, LevelType>[]) {
+  characters: Character[];
+  constructor(characters: Character[]) {
     this.characters = characters;
   }
 }

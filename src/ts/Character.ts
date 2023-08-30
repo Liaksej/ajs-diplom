@@ -14,7 +14,6 @@
  */
 
 export type CharacterType =
-  | "generic"
   | "swordsman"
   | "bowman"
   | "magician"
@@ -24,34 +23,29 @@ export type CharacterType =
 
 export type LevelType = 1 | 2 | 3 | 4;
 
-export interface CharacterInterface<
-  T extends CharacterType,
-  L extends LevelType,
-> {
-  level: L;
+export interface CharacterInterface {
+  level: LevelType;
   attack: number;
   defence: number;
   health: number;
-  type: T;
+  type: CharacterType;
 }
-export default class Character<T extends CharacterType, L extends LevelType>
-  implements CharacterInterface<T, L>
-{
-  public level: L;
+export default class Character implements CharacterInterface {
+  public level: LevelType;
   public attack: number;
   public defence: number;
   public health: number;
-  public type: T;
+  public type: CharacterType;
 
-  constructor(level: L, type: T) {
-    if (type === "generic") {
-      throw Error("Cannot create a generic type character");
-    }
-
+  constructor(level: LevelType, type: CharacterType) {
     this.level = level;
     this.attack = 0;
     this.defence = 0;
     this.health = 50;
     this.type = type;
+
+    if (new.target === Character) {
+      throw new TypeError("Cannot construct Character instances directly");
+    }
   }
 }

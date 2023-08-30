@@ -1,7 +1,7 @@
 import Character from "../Character";
 import { LevelType } from "../Character";
 
-export class Undead extends Character<"undead", LevelType> {
+export class Undead extends Character {
   constructor(level: LevelType) {
     super(level, "undead");
     this.attack = 40;
