@@ -34,12 +34,13 @@ type AllowedTypes = Array<
 export function* characterGenerator(
   allowedTypes: AllowedTypes,
   maxLevel: LevelType,
-) {
+): Generator {
   while (true) {
     const randomNumber = Math.floor(Math.random() * allowedTypes.length);
-    const randomLevel = Math.floor(Math.random() * maxLevel) as LevelType;
-    const character: CharacterInterface<CharacterType, LevelType> =
-      new allowedTypes[randomNumber](randomLevel);
+    const randomLevel = (Math.floor(Math.random() * maxLevel) + 1) as LevelType;
+    const character: CharacterInterface = new allowedTypes[randomNumber](
+      randomLevel,
+    );
     yield character;
   }
 }
