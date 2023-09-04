@@ -4,11 +4,7 @@ import { Magician } from "../characters/Magician";
 import { Swordsman } from "../characters/Swordsman";
 import { Undead } from "../characters/Undead";
 import { Vampire } from "../characters/Vampire";
-import Character, {
-  CharacterInterface,
-  CharacterType,
-  LevelType,
-} from "../Character";
+import { LevelType } from "../Character";
 
 describe("Bowman class", () => {
   it("should have correct initial properties for level 1", () => {
@@ -24,7 +20,7 @@ describe("Bowman class", () => {
 test.each([
   ["Bowman class", Bowman, 25, 25, 1, "bowman"],
   ["Swordsman class", Swordsman, 40, 10, 1, "swordsman"],
-  ["Magican class", Magician, 10, 40, 1, "magician"],
+  ["Magician class", Magician, 10, 40, 1, "magician"],
   ["Daemon class", Daemon, 10, 10, 1, "daemon"],
   ["Vampire class", Vampire, 25, 25, 1, "vampire"],
   ["Undead class", Undead, 40, 10, 1, "undead"],
