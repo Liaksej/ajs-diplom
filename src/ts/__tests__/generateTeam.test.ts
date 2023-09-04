@@ -3,8 +3,6 @@ import { Bowman } from "../characters/Bowman";
 import { Swordsman } from "../characters/Swordsman";
 import { Magician } from "../characters/Magician";
 
-const playerTypes = [Bowman, Swordsman, Magician];
-
 describe("testing CharacterGenerator function", () => {
   const playerTypes = [Bowman, Swordsman, Magician];
   const characterCount = 80;
