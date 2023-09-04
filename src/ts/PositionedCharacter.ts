@@ -1,4 +1,4 @@
-import Character, { CharacterType, LevelType } from "./Character";
+import Character from "./Character";
 
 export default class PositionedCharacter {
   character: Character;

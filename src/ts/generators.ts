@@ -1,8 +1,4 @@
-import Character, {
-  CharacterInterface,
-  CharacterType,
-  LevelType,
-} from "./Character";
+import { CharacterInterface, LevelType } from "./Character";
 import Team from "./Team";
 import { Bowman } from "./characters/Bowman";
 import { Swordsman } from "./characters/Swordsman";
