@@ -13,37 +13,51 @@ import GameStateService from "./GameStateService";
 export default class GameController {
   gamePlay: GamePlay;
   stateService: GameStateService;
+  private positions: PositionedCharacter[];
 
   constructor(gamePlay: GamePlay, stateService: GameStateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
+    this.onCellEnter = this.onCellEnter.bind(this);
+    this.onCellLeave = this.onCellLeave.bind(this);
+    this.positions = [...this.creatEnemyTeams(), ...this.creatGamerTeams()];
   }
 
   init() {
     this.gamePlay.drawUi(themes.prairie);
-    this.gamePlay.redrawPositions([
-      ...this.creatEnemyTeams(),
-      ...this.creatGamerTeams(),
-    ]);
+    this.gamePlay.redrawPositions(this.positions);
+    this.gamePlay.addCellEnterListener(this.onCellEnter);
+    this.gamePlay.addCellLeaveListener(this.onCellLeave);
+    // this.gamePlay.addCellEnterListener(this.onCellEnter);
     // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
   }
 
-  // onCellClick(index: number) {
+  // private onCellClick(index: number) {
   //   // TODO: react to click
   // }
 
-  // onCellEnter(index: number) {
-  //   // TODO: react to mouse enter
-  // }
+  private onCellEnter(index: number) {
+    if (this.positions.some((position) => position.position === index)) {
+      this.gamePlay.showCellTooltip(this.createMessage(index), index);
+    }
+  }
 
-  // onCellLeave(index: number) {
-  //   // TODO: react to mouse leave
-  // }
+  private onCellLeave(index: number) {
+    this.gamePlay.hideCellTooltip(index);
+  }
 
-  creatEnemyTeams(): PositionedCharacter[] {
+  private createMessage(index: number): string {
+    const position = this.positions.find(
+      (position) => position.position === index,
+    );
+
+    return `\u{1F396} ${position?.character.level} \u{2694} ${position?.character.attack} \u{1F6E1} ${position?.character.defence} \u{2764} ${position?.character.health}`;
+  }
+
+  private creatEnemyTeams(): PositionedCharacter[] {
     const enemyAllowedTeamMembers = [Undead, Vampire, Daemon];
-    const enemyTeamCells = this.getTeamCells(this.gamePlay.boardSize, "enemy");
+    const enemyTeamCells = this.getTeamCells(8, "enemy");
 
     const enemyTeam = generateTeam(enemyAllowedTeamMembers, 1, 3);
 
@@ -56,9 +70,9 @@ export default class GameController {
     });
   }
 
-  creatGamerTeams(): PositionedCharacter[] {
+  private creatGamerTeams(): PositionedCharacter[] {
     const gamerAllowedTeamMembers = [Bowman, Swordsman, Magician];
-    const gamerTeamCells = this.getTeamCells(this.gamePlay.boardSize, "gamer");
+    const gamerTeamCells = this.getTeamCells(8, "gamer");
 
     const gamerTeam = generateTeam(gamerAllowedTeamMembers, 1, 3);
 

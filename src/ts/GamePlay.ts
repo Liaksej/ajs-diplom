@@ -6,12 +6,12 @@ export default class GamePlay {
   container: HTMLElement | null;
   boardEl: HTMLElement | null;
   cells: HTMLElement[];
-  cellClickListeners: [];
-  cellEnterListeners: [];
-  cellLeaveListeners: [];
-  newGameListeners: EventListener[];
-  saveGameListeners: EventListener[];
-  loadGameListeners: EventListener[];
+  private cellClickListeners: ((index: number) => void)[];
+  private cellEnterListeners: ((index: number) => void)[];
+  private cellLeaveListeners: ((index: number) => void)[];
+  private newGameListeners: EventListener[];
+  private saveGameListeners: EventListener[];
+  private loadGameListeners: EventListener[];
   [key: string]: any;
 
   constructor() {
@@ -88,7 +88,9 @@ export default class GamePlay {
         this.boardEl?.appendChild(cellEl);
       }
 
-      this.cells = Array.from(this.boardEl!.children) as HTMLElement[];
+      if (this.boardEl) {
+        this.cells = Array.from(this.boardEl.children) as HTMLElement[];
+      }
     }
   }
 
@@ -128,7 +130,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addCellEnterListener(callback: never) {
+  addCellEnterListener(callback: (index: number) => void) {
     this.cellEnterListeners.push(callback);
   }
 
@@ -137,7 +139,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addCellLeaveListener(callback: never) {
+  addCellLeaveListener(callback: (index: number) => void) {
     this.cellLeaveListeners.push(callback);
   }
 
@@ -146,7 +148,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addCellClickListener(callback: never) {
+  addCellClickListener(callback: (index: number) => void) {
     this.cellClickListeners.push(callback);
   }
 
@@ -177,34 +179,40 @@ export default class GamePlay {
     this.loadGameListeners.push(callback);
   }
 
-  onCellEnter(event: any) {
+  onCellEnter(event: Event) {
     event.preventDefault();
-    const index = this.cells.indexOf(event.currentTarget);
-    this.cellEnterListeners.forEach((o: any) => o.call(null, index));
+    const index = this.cells.indexOf(event.currentTarget as HTMLElement);
+    this.cellEnterListeners.forEach((o: (index: number) => void) =>
+      o.call(null, index),
+    );
   }
 
-  onCellLeave(event: any) {
+  onCellLeave(event: Event) {
     event.preventDefault();
-    const index = this.cells.indexOf(event.currentTarget);
-    this.cellLeaveListeners.forEach((o: any) => o.call(null, index));
+    const index = this.cells.indexOf(event.currentTarget as HTMLElement);
+    this.cellLeaveListeners.forEach((o: (index: number) => void) =>
+      o.call(null, index),
+    );
   }
 
-  onCellClick(event: any) {
-    const index = this.cells.indexOf(event.currentTarget);
-    this.cellClickListeners.forEach((o: any) => o.call(null, index));
+  onCellClick(event: Event) {
+    const index = this.cells.indexOf(event.currentTarget as HTMLElement);
+    this.cellClickListeners.forEach((o: (index: number) => void) =>
+      o.call(null, index),
+    );
   }
 
-  onNewGameClick(event: any) {
+  onNewGameClick(event: Event) {
     event.preventDefault();
     this.newGameListeners.forEach((o: any) => o.call(null));
   }
 
-  onSaveGameClick(event: any) {
+  onSaveGameClick(event: Event) {
     event.preventDefault();
     this.saveGameListeners.forEach((o: any) => o.call(null));
   }
 
-  onLoadGameClick(event: any) {
+  onLoadGameClick(event: Event) {
     event.preventDefault();
     this.loadGameListeners.forEach((o: any) => o.call(null));
   }
@@ -253,7 +261,9 @@ export default class GamePlay {
   }
 
   setCursor(cursor: string) {
-    this.boardEl!.style.cursor = cursor;
+    if (this.boardEl) {
+      this.boardEl.style.cursor = cursor;
+    }
   }
 
   checkBinding() {
