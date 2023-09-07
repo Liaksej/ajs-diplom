@@ -9,6 +9,7 @@ import { Vampire } from "./characters/Vampire";
 import { Daemon } from "./characters/Daemon";
 import { generateTeam } from "./generators";
 import GameStateService from "./GameStateService";
+import cursors from "./cursors";
 
 export default class GameController {
   gamePlay: GamePlay;
@@ -20,6 +21,7 @@ export default class GameController {
     this.stateService = stateService;
     this.onCellEnter = this.onCellEnter.bind(this);
     this.onCellLeave = this.onCellLeave.bind(this);
+    this.onCellClick = this.onCellClick.bind(this);
     this.positions = [...this.creatEnemyTeams(), ...this.creatGamerTeams()];
   }
 
@@ -28,18 +30,43 @@ export default class GameController {
     this.gamePlay.redrawPositions(this.positions);
     this.gamePlay.addCellEnterListener(this.onCellEnter);
     this.gamePlay.addCellLeaveListener(this.onCellLeave);
-    // this.gamePlay.addCellEnterListener(this.onCellEnter);
+    this.gamePlay.addCellClickListener(this.onCellClick);
     // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
   }
 
-  // private onCellClick(index: number) {
-  //   // TODO: react to click
-  // }
+  private onCellClick(index: number) {
+    if (
+      this.positions.some(
+        (position) =>
+          position.position === index &&
+          ["swordsman", "bowman", "magician"].includes(position.character.type),
+      )
+    ) {
+      this.gamePlay.selectCell(index);
+    } else {
+      GamePlay.showError("Ошибка... Выберите своего персонажа");
+    }
+  }
 
   private onCellEnter(index: number) {
-    if (this.positions.some((position) => position.position === index)) {
-      this.gamePlay.showCellTooltip(this.createMessage(index), index);
+    const position = this.positions.find(
+      (position) => position.position === index,
+    );
+    if (position) {
+      this.gamePlay.showCellTooltip(this.createToolpitMessage(index), index);
+
+      if (
+        ["swordsman", "bowman", "magician"].includes(position.character.type)
+      ) {
+        this.gamePlay.setCursor(cursors.pointer);
+      } else if (
+        ["undead", "vampire", "daemon"].includes(position.character.type)
+      ) {
+        this.gamePlay.setCursor(cursors.crosshair);
+      }
+    } else {
+      this.gamePlay.setCursor(cursors.auto);
     }
   }
 
@@ -47,7 +74,7 @@ export default class GameController {
     this.gamePlay.hideCellTooltip(index);
   }
 
-  private createMessage(index: number): string {
+  private createToolpitMessage(index: number): string {
     const position = this.positions.find(
       (position) => position.position === index,
     );

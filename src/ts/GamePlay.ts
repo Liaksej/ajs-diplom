@@ -232,9 +232,7 @@ export default class GamePlay {
 
   deselectCell(index: number) {
     const cell: HTMLElement = this.cells[index];
-    cell.classList.remove(
-      ...Array.from(cell.classList).filter((o) => o.startsWith("selected")),
-    );
+    this.cells.forEach((o) => o.classList.remove("selected"));
   }
 
   showCellTooltip(message: string, index: number) {
