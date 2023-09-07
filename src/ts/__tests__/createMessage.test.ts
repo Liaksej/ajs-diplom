@@ -18,7 +18,7 @@ test("Method createMessage should create a correct message for character at give
       position: 5,
     },
   ];
-  expect(gameCtrl["createMessage"](5)).toBe(
+  expect(gameCtrl["createToolpitMessage"](5)).toBe(
     "\u{1F396} 1 \u{2694} 25 \u{1F6E1} 25 \u{2764} 50",
   );
 });
@@ -30,7 +30,7 @@ test("Method createMessage should create a correct message for character at give
       position: 5,
     },
   ];
-  expect(gameCtrl["createMessage"](6)).toBe(
+  expect(gameCtrl["createToolpitMessage"](6)).toBe(
     "\u{1F396} undefined \u{2694} undefined \u{1F6E1} undefined \u{2764} undefined",
   );
 });
