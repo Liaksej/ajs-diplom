@@ -54,19 +54,31 @@ export default class GameController {
       (position) => position.position === index,
     );
     if (position) {
+      this.gamePlay.deselectEmptyCell();
       this.gamePlay.showCellTooltip(this.createToolpitMessage(index), index);
 
       if (
         ["swordsman", "bowman", "magician"].includes(position.character.type)
       ) {
         this.gamePlay.setCursor(cursors.pointer);
-      } else if (
-        ["undead", "vampire", "daemon"].includes(position.character.type)
-      ) {
-        this.gamePlay.setCursor(cursors.crosshair);
       }
+
+      if (this.gamePlay.checkSelectedCell()) {
+        if (["daemon", "vampire", "undead"].includes(position.character.type)) {
+          this.gamePlay.setCursor(cursors.crosshair);
+          this.gamePlay.selectEnemyCell(index);
+        }
+      }
+    } else if (
+      this.gamePlay.checkSelectedCell() &&
+      this.gamePlay.checkEmptyCell(index)
+    ) {
+      this.gamePlay.deselectEnemyCell();
+      this.gamePlay.setCursor(cursors.pointer);
+      this.gamePlay.selectEmptyCell(index);
     } else {
       this.gamePlay.setCursor(cursors.auto);
+      this.gamePlay.deselectEnemyCell();
     }
   }
 

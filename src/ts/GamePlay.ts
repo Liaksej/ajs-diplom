@@ -226,13 +226,36 @@ export default class GamePlay {
   }
 
   selectCell(index: number, color = "yellow") {
-    this.deselectCell(index);
+    this.deselectCell();
     this.cells[index].classList.add("selected", `selected-${color}`);
   }
 
-  deselectCell(index: number) {
-    const cell: HTMLElement = this.cells[index];
+  selectEnemyCell(index: number, color = "red") {
+    this.deselectEnemyCell();
+    this.cells[index].classList.add("selected", `selected-${color}`);
+  }
+
+  selectEmptyCell(index: number, color = "green") {
+    this.deselectEmptyCell();
+    this.cells[index].classList.add("selected", `selected-${color}`);
+  }
+
+  private deselectCell() {
     this.cells.forEach((o) => o.classList.remove("selected"));
+  }
+
+  deselectEnemyCell() {
+    const enemyCells = this.cells.filter((o) =>
+      o.classList.contains("selected-red"),
+    );
+    enemyCells.forEach((o) => o.classList.remove("selected"));
+  }
+
+  deselectEmptyCell() {
+    const emptyCell = this.cells.filter((o) =>
+      o.classList.contains("selected-green"),
+    );
+    emptyCell.forEach((o) => o.classList.remove("selected"));
   }
 
   showCellTooltip(message: string, index: number) {
@@ -262,6 +285,14 @@ export default class GamePlay {
     if (this.boardEl) {
       this.boardEl.style.cursor = cursor;
     }
+  }
+
+  checkSelectedCell() {
+    return this.cells.some((o) => o.classList.contains("selected"));
+  }
+
+  checkEmptyCell(index: number) {
+    return this.cells[index].childElementCount === 0;
   }
 
   checkBinding() {
