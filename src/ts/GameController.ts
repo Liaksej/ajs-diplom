@@ -31,7 +31,6 @@ export default class GameController {
     this.gamePlay.addCellEnterListener(this.onCellEnter);
     this.gamePlay.addCellLeaveListener(this.onCellLeave);
     this.gamePlay.addCellClickListener(this.onCellClick);
-    // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
   }
 
