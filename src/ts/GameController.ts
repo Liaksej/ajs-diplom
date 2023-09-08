@@ -76,7 +76,12 @@ export default class GameController {
       this.gamePlay.deselectEnemyCell();
       this.gamePlay.setCursor(cursors.pointer);
       this.gamePlay.selectEmptyCell(index);
-    } else {
+    }
+    // TODO: Если ход не допустим, показывать этот кейс.
+    // else if () {
+    //   this.gamePlay.setCursor(cursors.notallowed);
+    // }
+    else {
       this.gamePlay.setCursor(cursors.auto);
       this.gamePlay.deselectEnemyCell();
     }
