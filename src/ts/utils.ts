@@ -1,3 +1,5 @@
+import Character from "./Character";
+
 /**
  * @todo
  * @param index - индекс поля
@@ -65,4 +67,90 @@ export function calcHealthLevel(health: number) {
   }
 
   return "high";
+}
+
+// Расчет хода. Направление движения аналогично ферзю в шахматах. Персонажи разного типа могут ходить на разное расстояние (в базовом варианте можно перескакивать через других персонажей, т.е. как конь в шахматах, единственное правило - ходим по прямым и по диагонали):
+//
+// Мечники/Скелеты - 4 клетки в любом направлении
+// Лучники/Вампиры - 2 клетки в любом направлении
+
+// Маги/Демоны - 1 клетка в любом направлении
+export function checkPass(
+  character: { type: string },
+  boardSize: number,
+  position: number,
+) {
+  const pass = ["swordsman", "undead"].includes(character.type)
+    ? 4
+    : ["bowman", "vampire"].includes(character.type)
+    ? 2
+    : 1;
+
+  const possiblePass = possibleActionArrayCleaner(pass, boardSize, position);
+
+  return possiblePass.includes(position);
+}
+
+export function checkAttack(
+  character: { type: string },
+  boardSize: number,
+  position: number,
+) {
+  const pass = ["swordsman", "undead"].includes(character.type)
+    ? 1
+    : ["bowman", "vampire"].includes(character.type)
+    ? 2
+    : 4;
+
+  const possiblePass = possibleActionArrayCleaner(pass, boardSize, position);
+
+  return possiblePass.includes(position);
+}
+
+function possibleActionArrayCleaner(
+  pass: number,
+  boardSize: number,
+  position: number,
+) {
+  const possiblePassRaw: number[] = possibleActionArrayGenerator(
+    pass,
+    boardSize,
+    position,
+  );
+
+  const possiblePass = possiblePassRaw.filter((index) => {
+    if (index < 0 || index >= boardSize ** 2) {
+      return false;
+    }
+
+    const diff = Math.abs(position - index);
+    return !(diff % boardSize > pass || Math.floor(diff / boardSize) > pass);
+  });
+
+  possiblePass.includes(position);
+  return possiblePass;
+}
+
+function possibleActionArrayGenerator(
+  pass: number,
+  boardSize: number,
+  position: number,
+) {
+  const directions = [
+    -boardSize - 1,
+    -boardSize,
+    -boardSize + 1,
+    -1,
+    1,
+    boardSize - 1,
+    boardSize,
+    boardSize + 1,
+  ];
+  const iter: number[] = [];
+  for (let i = 1; i <= pass; i++) {
+    for (const dir of directions) {
+      iter.push(position + dir * i);
+    }
+  }
+  return iter;
 }
