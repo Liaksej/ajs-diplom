@@ -31,32 +31,39 @@ export default class GameController {
     this.gamePlay.addCellEnterListener(this.onCellEnter);
     this.gamePlay.addCellLeaveListener(this.onCellLeave);
     this.gamePlay.addCellClickListener(this.onCellClick);
-    this.gamePlay.addCellClickListener(this.onCellClick);
     // TODO: load saved stated from stateService
   }
 
   private onCellClick(index: number) {
+    const selectedCharacter = this.getSelectedCharacter();
+    const position = this.getPosition(index);
+
     if (
-      this.positions.some(
-        (position) =>
-          position.position === index &&
-          ["swordsman", "bowman", "magician"].includes(position.character.type),
-      )
+      position &&
+      ["swordsman", "bowman", "magician"].includes(position.character.type)
     ) {
       this.gamePlay.selectCell(index);
-    } else {
-      GamePlay.showError("Ошибка... Выберите своего персонажа");
+      return;
     }
+
+    if (
+      (position &&
+        selectedCharacter?.attackField.includes(index) &&
+        ["undead", "vampire", "daemon"].includes(position.character.type)) ||
+      (position === undefined && selectedCharacter?.moveField.includes(index))
+    ) {
+      // TODO: здесь организовать ход урона и редроу
+      return;
+    }
+
+    GamePlay.showError("Ошибка... Недопустимое действие");
+    return;
   }
 
   private onCellEnter(index: number) {
     this.gamePlay.deselectEmptyCell();
-    const position = this.positions.find(
-      (position) => position.position === index,
-    );
-    const selected = this.positions.find(
-      (position) => position.position === this.gamePlay.findSelectedCell(),
-    );
+    const position = this.getPosition(index);
+    const selected = this.getSelectedCharacter();
 
     if (position) {
       this.gamePlay.showCellTooltip(this.createToolpitMessage(index), index);
@@ -67,7 +74,7 @@ export default class GameController {
         this.gamePlay.setCursor(cursors.pointer);
       }
 
-      if (selected?.character.type) {
+      if (selected) {
         if (
           this.gamePlay.checkSelectedCell() &&
           ["daemon", "vampire", "undead"].includes(position.character.type)
@@ -75,23 +82,31 @@ export default class GameController {
           if (selected.attackField.includes(index)) {
             this.gamePlay.setCursor(cursors.crosshair);
             this.gamePlay.selectEnemyCell(index);
-          } else {
-            this.gamePlay.setCursor(cursors.notallowed);
           }
         }
       }
-    } else if (
-      selected &&
-      this.gamePlay.checkEmptyCell(index) &&
-      selected.moveField.includes(index)
-    ) {
-      this.gamePlay.deselectEnemyCell();
-      this.gamePlay.setCursor(cursors.pointer);
-      this.gamePlay.selectEmptyCell(index);
+    } else if (selected && this.gamePlay.checkEmptyCell(index)) {
+      if (selected.moveField.includes(index)) {
+        this.gamePlay.deselectEnemyCell();
+        this.gamePlay.setCursor(cursors.pointer);
+        this.gamePlay.selectEmptyCell(index);
+      } else {
+        this.gamePlay.setCursor(cursors.notallowed);
+      }
     } else {
       this.gamePlay.setCursor(cursors.auto);
       this.gamePlay.deselectEnemyCell();
     }
+  }
+
+  private getPosition(index: number) {
+    return this.positions.find((position) => position.position === index);
+  }
+
+  private getSelectedCharacter() {
+    return this.positions.find((position) =>
+      this.gamePlay.findSelectedCell().includes(position.position),
+    );
   }
 
   private onCellLeave(index: number) {

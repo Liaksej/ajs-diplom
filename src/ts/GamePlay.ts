@@ -196,6 +196,7 @@ export default class GamePlay {
   }
 
   onCellClick(event: Event) {
+    event.preventDefault();
     const index = this.cells.indexOf(event.currentTarget as HTMLElement);
     this.cellClickListeners.forEach((o: (index: number) => void) =>
       o.call(null, index),
@@ -221,9 +222,9 @@ export default class GamePlay {
     alert(message);
   }
 
-  static showMessage(message: string) {
-    alert(message);
-  }
+  // static showMessage(message: string) {
+  //   alert(message);
+  // }
 
   selectCell(index: number, color = "yellow") {
     this.deselectCell();
@@ -292,7 +293,11 @@ export default class GamePlay {
   }
 
   findSelectedCell() {
-    return this.cells.findIndex((o) => o.classList.contains("selected"));
+    return this.cells
+      .map((o, i) => {
+        return o.classList.contains("selected") ? i : null;
+      })
+      .filter((x) => x !== null);
   }
 
   checkEmptyCell(index: number) {
