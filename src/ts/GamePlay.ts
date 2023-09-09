@@ -291,6 +291,10 @@ export default class GamePlay {
     return this.cells.some((o) => o.classList.contains("selected"));
   }
 
+  findSelectedCell() {
+    return this.cells.findIndex((o) => o.classList.contains("selected"));
+  }
+
   checkEmptyCell(index: number) {
     return this.cells[index].childElementCount === 0;
   }
