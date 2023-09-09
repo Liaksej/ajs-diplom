@@ -134,22 +134,23 @@ function possiblePassArrayGenerator(
   boardSize: number,
   position: number,
 ) {
-  const directions = [
-    -boardSize - 1,
-    -boardSize,
-    -boardSize + 1,
-    -1,
-    1,
-    boardSize - 1,
-    boardSize,
-    boardSize + 1,
-  ];
+  const x0 = position % boardSize;
+  const y0 = Math.floor(position / boardSize);
   const passArray: number[] = [];
-  for (let i = 1; i <= pass; i++) {
-    for (const dir of directions) {
-      passArray.push(position + dir * i);
+
+  for (let dy = -pass; dy <= pass; dy++) {
+    for (let dx = -pass; dx <= pass; dx++) {
+      if (Math.abs(dx) === Math.abs(dy) || dx === 0 || dy === 0) {
+        const newY = y0 + dy;
+        const newX = x0 + dx;
+
+        if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
+          passArray.push(newY * boardSize + newX);
+        }
+      }
     }
   }
+
   return passArray;
 }
 
