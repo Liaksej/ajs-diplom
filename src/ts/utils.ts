@@ -1,5 +1,3 @@
-import Character from "./Character";
-
 /**
  * @todo
  * @param index - индекс поля
@@ -69,69 +67,69 @@ export function calcHealthLevel(health: number) {
   return "high";
 }
 
-// Расчет хода. Направление движения аналогично ферзю в шахматах. Персонажи разного типа могут ходить на разное расстояние (в базовом варианте можно перескакивать через других персонажей, т.е. как конь в шахматах, единственное правило - ходим по прямым и по диагонали):
-//
-// Мечники/Скелеты - 4 клетки в любом направлении
-// Лучники/Вампиры - 2 клетки в любом направлении
-
-// Маги/Демоны - 1 клетка в любом направлении
 export function checkPass(
-  character: { type: string },
+  character: string,
   boardSize: number,
   position: number,
 ) {
-  const pass = ["swordsman", "undead"].includes(character.type)
+  const pass = ["swordsman", "undead"].includes(character)
     ? 4
-    : ["bowman", "vampire"].includes(character.type)
+    : ["bowman", "vampire"].includes(character)
     ? 2
     : 1;
 
-  const possiblePass = possibleActionArrayCleaner(pass, boardSize, position);
+  const possiblePassRaw = possiblePassArrayGenerator(pass, boardSize, position);
 
-  return possiblePass.includes(position);
+  return possibleActionArrayCleaner(pass, boardSize, position, possiblePassRaw);
 }
 
 export function checkAttack(
-  character: { type: string },
+  character: string,
   boardSize: number,
   position: number,
 ) {
-  const pass = ["swordsman", "undead"].includes(character.type)
+  const pass = ["swordsman", "undead"].includes(character)
     ? 1
-    : ["bowman", "vampire"].includes(character.type)
+    : ["bowman", "vampire"].includes(character)
     ? 2
     : 4;
 
-  const possiblePass = possibleActionArrayCleaner(pass, boardSize, position);
+  const possibleAttackRaw = possibleAttackArrayGenerator(
+    pass,
+    boardSize,
+    position,
+  );
 
-  return possiblePass.includes(position);
+  return possibleActionArrayCleaner(
+    pass,
+    boardSize,
+    position,
+    possibleAttackRaw,
+  );
 }
 
 function possibleActionArrayCleaner(
   pass: number,
   boardSize: number,
   position: number,
+  possiblePassRaw: number[],
 ) {
-  const possiblePassRaw: number[] = possibleActionArrayGenerator(
-    pass,
-    boardSize,
-    position,
-  );
+  const x0 = position % boardSize;
+  const y0 = Math.floor(position / boardSize);
 
-  const possiblePass = possiblePassRaw.filter((index) => {
+  return possiblePassRaw.filter((index) => {
     if (index < 0 || index >= boardSize ** 2) {
       return false;
     }
 
-    const diff = Math.abs(position - index);
-    return !(diff % boardSize > pass || Math.floor(diff / boardSize) > pass);
-  });
+    const x = index % boardSize;
+    const y = Math.floor(index / boardSize);
 
-  possiblePass.includes(position);
-  return possiblePass;
+    return Math.abs(x - x0) <= pass && Math.abs(y - y0) <= pass;
+  });
 }
 
-function possibleActionArrayGenerator(
+function possiblePassArrayGenerator(
   pass: number,
   boardSize: number,
   position: number,
@@ -146,11 +144,25 @@ function possibleActionArrayGenerator(
     boardSize,
     boardSize + 1,
   ];
-  const iter: number[] = [];
+  const passArray: number[] = [];
   for (let i = 1; i <= pass; i++) {
     for (const dir of directions) {
-      iter.push(position + dir * i);
+      passArray.push(position + dir * i);
     }
   }
-  return iter;
+  return passArray;
+}
+
+function possibleAttackArrayGenerator(
+  attack: number,
+  boardSize: number,
+  position: number,
+) {
+  const atackArray: number[] = [];
+  for (let i = 1; i <= attack; i++) {
+    for (let a = -attack; a <= attack; a++) {
+      atackArray.push(position + a + i * boardSize);
+    }
+  }
+  return atackArray;
 }

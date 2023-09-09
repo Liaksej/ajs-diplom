@@ -31,6 +31,7 @@ export default class GameController {
     this.gamePlay.addCellEnterListener(this.onCellEnter);
     this.gamePlay.addCellLeaveListener(this.onCellLeave);
     this.gamePlay.addCellClickListener(this.onCellClick);
+    this.gamePlay.addCellClickListener(this.onCellClick);
     // TODO: load saved stated from stateService
   }
 
@@ -49,11 +50,15 @@ export default class GameController {
   }
 
   private onCellEnter(index: number) {
+    this.gamePlay.deselectEmptyCell();
     const position = this.positions.find(
       (position) => position.position === index,
     );
+    const selected = this.positions.find(
+      (position) => position.position === this.gamePlay.findSelectedCell(),
+    );
+
     if (position) {
-      this.gamePlay.deselectEmptyCell();
       this.gamePlay.showCellTooltip(this.createToolpitMessage(index), index);
 
       if (
@@ -62,25 +67,28 @@ export default class GameController {
         this.gamePlay.setCursor(cursors.pointer);
       }
 
-      if (this.gamePlay.checkSelectedCell()) {
-        if (["daemon", "vampire", "undead"].includes(position.character.type)) {
-          this.gamePlay.setCursor(cursors.crosshair);
-          this.gamePlay.selectEnemyCell(index);
+      if (selected?.character.type) {
+        if (
+          this.gamePlay.checkSelectedCell() &&
+          ["daemon", "vampire", "undead"].includes(position.character.type)
+        ) {
+          if (selected.attackField.includes(index)) {
+            this.gamePlay.setCursor(cursors.crosshair);
+            this.gamePlay.selectEnemyCell(index);
+          } else {
+            this.gamePlay.setCursor(cursors.notallowed);
+          }
         }
       }
     } else if (
-      this.gamePlay.checkSelectedCell() &&
-      this.gamePlay.checkEmptyCell(index)
+      selected &&
+      this.gamePlay.checkEmptyCell(index) &&
+      selected.moveField.includes(index)
     ) {
       this.gamePlay.deselectEnemyCell();
       this.gamePlay.setCursor(cursors.pointer);
       this.gamePlay.selectEmptyCell(index);
-    }
-    // TODO: Если ход не допустим, показывать этот кейс.
-    // else if () {
-    //   this.gamePlay.setCursor(cursors.notallowed);
-    // }
-    else {
+    } else {
       this.gamePlay.setCursor(cursors.auto);
       this.gamePlay.deselectEnemyCell();
     }
