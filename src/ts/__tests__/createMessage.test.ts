@@ -16,6 +16,11 @@ test("Method createMessage should create a correct message for character at give
     {
       character: new Bowman(1),
       position: 5,
+      moveField: [1, 2, 3, 4, 5],
+      attackField: [1, 2, 3, 4, 5],
+      changePosition() {
+        return;
+      },
     },
   ];
   expect(gameCtrl["createToolpitMessage"](5)).toBe(
@@ -28,6 +33,11 @@ test("Method createMessage should create a correct message for character at give
     {
       character: new Bowman(1),
       position: 5,
+      moveField: [1, 2, 3, 4, 5],
+      attackField: [1, 2, 3, 4, 5],
+      changePosition() {
+        return;
+      },
     },
   ];
   expect(gameCtrl["createToolpitMessage"](6)).toBe(
