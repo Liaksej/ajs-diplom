@@ -94,18 +94,7 @@ export function checkAttack(
     ? 2
     : 4;
 
-  const possibleAttackRaw = possibleAttackArrayGenerator(
-    pass,
-    boardSize,
-    position,
-  );
-
-  return possibleActionArrayCleaner(
-    pass,
-    boardSize,
-    position,
-    possibleAttackRaw,
-  );
+  return possibleAttackArrayGenerator(pass, boardSize, position);
 }
 
 function possibleActionArrayCleaner(
@@ -159,11 +148,23 @@ function possibleAttackArrayGenerator(
   boardSize: number,
   position: number,
 ) {
-  const atackArray: number[] = [];
-  for (let i = 1; i <= attack; i++) {
-    for (let a = -attack; a <= attack; a++) {
-      atackArray.push(position + a + i * boardSize);
+  const x0 = position % boardSize;
+  const y0 = Math.floor(position / boardSize);
+  const attackArray: number[] = [];
+
+  for (let dy = 0 - attack; dy <= attack; dy++) {
+    for (let dx = 0 - attack; dx <= attack; dx++) {
+      const radius = Math.abs(dx) + Math.abs(dy);
+      if (radius <= attack * 2) {
+        const newY = y0 + dy;
+        const newX = x0 + dx;
+
+        if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
+          attackArray.push(newY * boardSize + newX);
+        }
+      }
     }
   }
-  return atackArray;
+
+  return attackArray;
 }
