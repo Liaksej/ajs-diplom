@@ -1,6 +1,8 @@
 import Character from "./Character";
 import { checkPass, checkAttack } from "./utils";
-import { gamePlay } from "./app";
+import GamePlay from "./GamePlay";
+
+const gamePlay = new GamePlay();
 
 export default class PositionedCharacter {
   character: Character;
