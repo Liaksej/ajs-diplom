@@ -246,6 +246,10 @@ export default class GamePlay {
     this.cells.forEach((o) => o.classList.remove("selected"));
   }
 
+  deselectAllCells() {
+    this.cells.forEach((o) => (o.className = "cell map-tile map-tile-center"));
+  }
+
   deselectEnemyCell() {
     const enemyCells = this.cells.filter((o) =>
       o.classList.contains("selected-red"),

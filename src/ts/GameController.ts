@@ -48,12 +48,22 @@ export default class GameController {
     }
 
     if (
-      (position &&
-        selectedCharacter?.attackField.includes(index) &&
-        ["undead", "vampire", "daemon"].includes(position.character.type)) ||
-      (position === undefined && selectedCharacter?.moveField.includes(index))
+      position &&
+      selectedCharacter?.attackField.includes(index) &&
+      ["undead", "vampire", "daemon"].includes(position.character.type)
     ) {
       // TODO: здесь организовать ход урона и редроу
+      return;
+    }
+
+    if (
+      position === undefined &&
+      selectedCharacter?.moveField.includes(index)
+    ) {
+      selectedCharacter?.changePosition(index);
+      this.gamePlay.deselectAllCells();
+      this.gamePlay.redrawPositions(this.positions);
+      this.gameState = GameState.from(this.gameState);
       return;
     }
 
@@ -62,7 +72,6 @@ export default class GameController {
   }
 
   private onCellEnter(index: number) {
-    this.gamePlay.deselectEmptyCell();
     const position = this.getPosition(index);
     const selected = this.getSelectedCharacter();
 
@@ -100,6 +109,11 @@ export default class GameController {
     }
   }
 
+  private onCellLeave(index: number) {
+    this.gamePlay.hideCellTooltip(index);
+    this.gamePlay.deselectEmptyCell();
+  }
+
   private getPosition(index: number) {
     return this.positions.find((position) => position.position === index);
   }
@@ -108,10 +122,6 @@ export default class GameController {
     return this.positions.find((position) =>
       this.gamePlay.findSelectedCell().includes(position.position),
     );
-  }
-
-  private onCellLeave(index: number) {
-    this.gamePlay.hideCellTooltip(index);
   }
 
   private createToolpitMessage(index: number): string {
