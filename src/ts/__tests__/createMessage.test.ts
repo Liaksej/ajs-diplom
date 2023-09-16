@@ -1,21 +1,19 @@
-import GameController from "../GameController";
+jest.mock("../app", () => {
+  return {};
+});
 import GamePlay from "../GamePlay";
 import GameStateService from "../GameStateService";
+import GameController from "../GameController";
+
 import { Bowman } from "../characters/Bowman";
 
-let gameCtrl: GameController;
-let gamePlay: GamePlay;
-let stateService: GameStateService;
-
-beforeAll(() => {
-  gameCtrl = new GameController(gamePlay, stateService);
-});
-
-test("Method createMessage should create a correct message for character at given position", () => {
+test("1 Method createMessage should create a correct message for character at given position", () => {
+  const gameCtrl = new GameController(new GamePlay(), new GameStateService({}));
   gameCtrl["positions"] = [
     {
       character: new Bowman(1),
       position: 5,
+      boardSize: 8,
       moveField: [1, 2, 3, 4, 5],
       attackField: [1, 2, 3, 4, 5],
       changePosition() {
@@ -28,11 +26,13 @@ test("Method createMessage should create a correct message for character at give
   );
 });
 
-test("Method createMessage should create a correct message for character at given position", () => {
+test("2 Method createMessage should create a correct message for character at given position", () => {
+  const gameCtrl = new GameController(new GamePlay(), new GameStateService({}));
   gameCtrl["positions"] = [
     {
       character: new Bowman(1),
       position: 5,
+      boardSize: 8,
       moveField: [1, 2, 3, 4, 5],
       attackField: [1, 2, 3, 4, 5],
       changePosition() {

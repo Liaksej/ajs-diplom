@@ -5,6 +5,8 @@ import GamePlay from "./GamePlay";
 import GameController from "./GameController";
 import GameStateService from "./GameStateService";
 
+export const BOARD_SIZE = 8;
+
 export const gamePlay = new GamePlay();
 gamePlay.bindToDOM(document.querySelector("#game-container"));
 

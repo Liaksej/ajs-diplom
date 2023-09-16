@@ -1,25 +1,25 @@
 import Character from "./Character";
 import { checkPass, checkAttack } from "./utils";
-import GamePlay from "./GamePlay";
-
-const gamePlay = new GamePlay();
+import { BOARD_SIZE } from "./app";
 
 export default class PositionedCharacter {
   character: Character;
   position: number;
   attackField: number[];
   moveField: number[];
+  boardSize: number;
   constructor(character: Character, position: number) {
     this.character = character;
     this.position = position;
+    this.boardSize = BOARD_SIZE;
     this.attackField = checkAttack(
       this.character.type,
-      gamePlay.boardSize,
+      this.boardSize,
       this.position,
     );
     this.moveField = checkPass(
       this.character.type,
-      gamePlay.boardSize,
+      this.boardSize,
       this.position,
     );
   }
@@ -29,12 +29,12 @@ export default class PositionedCharacter {
       this.position = index;
       this.attackField = checkAttack(
         this.character.type,
-        gamePlay.boardSize,
+        this.boardSize,
         this.position,
       );
       this.moveField = checkPass(
         this.character.type,
-        gamePlay.boardSize,
+        this.boardSize,
         this.position,
       );
     }

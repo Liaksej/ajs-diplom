@@ -10,6 +10,7 @@ import { Daemon } from "./characters/Daemon";
 import { generateTeam } from "./generators";
 import GameStateService from "./GameStateService";
 import cursors from "./cursors";
+import { gamePlay } from "./app";
 
 export default class GameController {
   gamePlay: GamePlay;

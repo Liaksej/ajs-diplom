@@ -1,21 +1,22 @@
 import { calcHealthLevel, calcTileType } from "./utils";
 import PositionedCharacter from "./PositionedCharacter";
+import { BOARD_SIZE } from "./app";
 
 export default class GamePlay {
   boardSize: number;
   container: HTMLElement | null;
   boardEl: HTMLElement | null;
   cells: HTMLElement[];
-  private cellClickListeners: ((index: number) => void)[];
-  private cellEnterListeners: ((index: number) => void)[];
-  private cellLeaveListeners: ((index: number) => void)[];
-  private newGameListeners: EventListener[];
-  private saveGameListeners: EventListener[];
-  private loadGameListeners: EventListener[];
+  cellClickListeners: ((index: number) => void)[];
+  cellEnterListeners: ((index: number) => void)[];
+  cellLeaveListeners: ((index: number) => void)[];
+  newGameListeners: EventListener[];
+  saveGameListeners: EventListener[];
+  loadGameListeners: EventListener[];
   [key: string]: any;
 
   constructor() {
-    this.boardSize = 8;
+    this.boardSize = BOARD_SIZE;
     this.container = null;
     this.boardEl = null;
     this.cells = [];
@@ -241,7 +242,7 @@ export default class GamePlay {
     this.cells[index].classList.add("selected", `selected-${color}`);
   }
 
-  private deselectCell() {
+  deselectCell() {
     this.cells.forEach((o) => o.classList.remove("selected"));
   }
 
