@@ -1,6 +1,7 @@
 dist
 doc
 .idea
+*scratch_25.ts
 
 # Logs
 logs
