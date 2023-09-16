@@ -1,6 +1,14 @@
 export default class GameState {
-  static from(object: any) {
-    // TODO: create object
-    return null;
+  turn: "gamer" | "computer";
+
+  constructor() {
+    this.turn = "gamer";
+  }
+
+  static from(object: GameState) {
+    const gameState = new GameState();
+    gameState.turn = object.turn === "gamer" ? "computer" : "gamer";
+
+    return gameState;
   }
 }

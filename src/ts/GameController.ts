@@ -10,12 +10,13 @@ import { Daemon } from "./characters/Daemon";
 import { generateTeam } from "./generators";
 import GameStateService from "./GameStateService";
 import cursors from "./cursors";
-import { gamePlay } from "./app";
+import GameState from "./GameState";
 
 export default class GameController {
   gamePlay: GamePlay;
   stateService: GameStateService;
   private positions: PositionedCharacter[];
+  private gameState: GameState;
 
   constructor(gamePlay: GamePlay, stateService: GameStateService) {
     this.gamePlay = gamePlay;
@@ -24,6 +25,7 @@ export default class GameController {
     this.onCellLeave = this.onCellLeave.bind(this);
     this.onCellClick = this.onCellClick.bind(this);
     this.positions = [...this.creatEnemyTeams(), ...this.creatGamerTeams()];
+    this.gameState = new GameState();
   }
 
   init() {
