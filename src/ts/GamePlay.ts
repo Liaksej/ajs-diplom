@@ -272,11 +272,11 @@ export default class GamePlay {
     this.cells[index].title = "";
   }
 
-  showDamage(index: number, damage: any): Promise<void> {
+  showDamage(index: number, damage: number): Promise<void> {
     return new Promise((resolve) => {
       const cell = this.cells[index];
       const damageEl = document.createElement("span");
-      damageEl.textContent = damage;
+      damageEl.textContent = damage.toString();
       damageEl.classList.add("damage");
       cell.appendChild(damageEl);
 

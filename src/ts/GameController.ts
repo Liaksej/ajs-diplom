@@ -55,6 +55,8 @@ export default class GameController {
       ["undead", "vampire", "daemon"].includes(position.character.type)
     ) {
       // TODO: здесь организовать ход урона и редроу
+
+      this.causeDamage(selectedCharacter, position, index);
       return;
     }
 
@@ -62,15 +64,35 @@ export default class GameController {
       position === undefined &&
       selectedCharacter?.moveField.includes(index)
     ) {
-      selectedCharacter?.changePosition(index);
-      this.gamePlay.deselectAllCells();
-      this.gamePlay.redrawPositions(this.positions);
-      this.gameState = GameState.from(this.gameState);
+      this.changeCell(selectedCharacter, index);
       return;
     }
 
     GamePlay.showError("Ошибка... Недопустимое действие");
     return;
+  }
+
+  private async causeDamage(
+    selectedCharacter: PositionedCharacter,
+    position: PositionedCharacter,
+    index: number,
+  ) {
+    const damage = Math.max(
+      selectedCharacter?.character.attack - position.character.defence,
+      selectedCharacter?.character.attack * 0.1,
+    );
+    await this.gamePlay.showDamage(index, damage);
+
+    position.character.health = position.character.health - damage;
+    this.gamePlay.redrawPositions(this.positions);
+    this.gameState = GameState.from(this.gameState);
+  }
+
+  private changeCell(selectedCharacter: PositionedCharacter, index: number) {
+    selectedCharacter?.changePosition(index);
+    this.gamePlay.deselectAllCells();
+    this.gamePlay.redrawPositions(this.positions);
+    this.gameState = GameState.from(this.gameState);
   }
 
   private onCellEnter(index: number) {
