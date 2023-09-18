@@ -37,7 +37,7 @@ export default class GameController {
     // TODO: load saved stated from stateService
   }
 
-  private onCellClick(index: number) {
+  private async onCellClick(index: number) {
     const selectedCharacter = this.getSelectedCharacter();
     const position = this.getPosition(index);
 
@@ -54,9 +54,7 @@ export default class GameController {
       selectedCharacter?.attackField.includes(index) &&
       ["undead", "vampire", "daemon"].includes(position.character.type)
     ) {
-      // TODO: здесь организовать ход урона и редроу
-
-      this.causeDamage(selectedCharacter, position, index);
+      await this.causeDamage(selectedCharacter, position, index);
       return;
     }
 
@@ -86,6 +84,10 @@ export default class GameController {
     position.character.health = position.character.health - damage;
     this.gamePlay.redrawPositions(this.positions);
     this.gameState = GameState.from(this.gameState);
+
+    if (this.gameState.turn === "computer") {
+      this.computerPass();
+    }
   }
 
   private changeCell(selectedCharacter: PositionedCharacter, index: number) {
@@ -93,6 +95,10 @@ export default class GameController {
     this.gamePlay.deselectAllCells();
     this.gamePlay.redrawPositions(this.positions);
     this.gameState = GameState.from(this.gameState);
+
+    if (this.gameState.turn === "computer") {
+      this.computerPass();
+    }
   }
 
   private onCellEnter(index: number) {
@@ -200,5 +206,133 @@ export default class GameController {
       allCells = allCells - rowCells;
     }
     return teamCells;
+  }
+
+  private computerPass() {
+    const gamer = this.positions.filter((position) =>
+      ["bowman", "swordsman", "magician"].includes(position.character.type),
+    );
+
+    const computer = this.positions.filter((position) =>
+      ["undead", "vampire", "daemon"].includes(position.character.type),
+    );
+
+    this.computerAttackLogic(gamer, computer) ||
+      this.moveTowardsEnemy(gamer, computer);
+  }
+
+  private computerAttackLogic(
+    gamer: PositionedCharacter[],
+    computer: PositionedCharacter[],
+  ) {
+    let enemiesList: Array<PositionedCharacter[]> = [];
+
+    computer.forEach((character) => {
+      gamer.forEach((enemy) => {
+        if (character.attackField.includes(enemy.position)) {
+          enemiesList.push([character, enemy]);
+        }
+      });
+    });
+
+    if (enemiesList.length > 0) {
+      enemiesList.forEach(([computerCharacter, gamerCharacter], index) => {
+        if (
+          enemiesList.length > 1 &&
+          computerCharacter.character.health < gamerCharacter.character.health
+        ) {
+          enemiesList = enemiesList.filter((_item, i) => i !== index);
+        }
+      });
+      enemiesList.forEach(([computerCharacter, gamerCharacter], index) => {
+        if (
+          enemiesList.length > 1 &&
+          computerCharacter.character.attack < gamerCharacter.character.attack
+        ) {
+          enemiesList = enemiesList.filter((_item, i) => i !== index);
+        }
+      });
+      enemiesList.forEach(([computerCharacter, gamerCharacter], index) => {
+        if (
+          enemiesList.length > 1 &&
+          computerCharacter.character.defence < gamerCharacter.character.defence
+        ) {
+          enemiesList = enemiesList.filter((_item, i) => i !== index);
+        }
+      });
+      const [computerCharacter, gamerCharacter] =
+        enemiesList[Math.floor(Math.random() * enemiesList.length)];
+      return this.causeDamage(
+        computerCharacter,
+        gamerCharacter,
+        gamerCharacter.position,
+      );
+    }
+
+    return null;
+  }
+
+  private moveTowardsEnemy(
+    gamer: PositionedCharacter[],
+    computer: PositionedCharacter[],
+  ) {
+    const boardSize = this.gamePlay.boardSize;
+
+    const nearestEnemy: {
+      enemy: PositionedCharacter | null;
+      distance: number;
+      computerPosition: PositionedCharacter | null;
+    } = { enemy: null, distance: Infinity, computerPosition: null };
+
+    computer.forEach((computerPosition) => {
+      gamer.forEach((gamerPosition) => {
+        const tempDistance = this.getEuclideanDistance(
+          boardSize,
+          computerPosition.position,
+          gamerPosition.position,
+        );
+
+        if (nearestEnemy.distance > tempDistance) {
+          nearestEnemy.distance = tempDistance;
+          nearestEnemy.enemy = gamerPosition;
+          nearestEnemy.computerPosition = computerPosition;
+        }
+      });
+    });
+
+    if (
+      nearestEnemy.enemy !== null &&
+      nearestEnemy.distance !== Infinity &&
+      nearestEnemy.computerPosition !== null
+    ) {
+      const target = nearestEnemy.enemy?.position;
+      const possiblePasses = nearestEnemy.computerPosition.moveField;
+
+      if (target) {
+        const nearestPosition = possiblePasses.reduce((closest, point) => {
+          const distanceToTarget = nearestEnemy.distance;
+          const distanceToClosest = this.getEuclideanDistance(
+            boardSize,
+            closest,
+            target,
+          );
+
+          return distanceToTarget < distanceToClosest ? point : closest;
+        });
+
+        this.changeCell(nearestEnemy.computerPosition, nearestPosition);
+      }
+    }
+  }
+
+  private getEuclideanDistance(
+    bordSize: number,
+    position1: number,
+    position2: number,
+  ) {
+    const [x0, y0] = [position1 % bordSize, Math.floor(position1 / bordSize)];
+    const [x1, y1] = [position2 % bordSize, Math.floor(position2 / bordSize)];
+
+    return Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2);
   }
 }
