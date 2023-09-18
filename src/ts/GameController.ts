@@ -307,9 +307,13 @@ export default class GameController {
       nearestEnemy.computerPosition !== null
     ) {
       const target = nearestEnemy.enemy?.position;
-      const possiblePasses = nearestEnemy.computerPosition.moveField;
+      let possiblePasses = nearestEnemy.computerPosition.moveField;
 
-      if (target) {
+      if (typeof target === "number") {
+        possiblePasses = possiblePasses.filter((point) =>
+          this.gamePlay.checkEmptyCell(point),
+        );
+
         const nearestPosition = possiblePasses.reduce((closest, point) => {
           const distanceToTarget = nearestEnemy.distance;
           const distanceToClosest = this.getEuclideanDistance(
@@ -320,7 +324,6 @@ export default class GameController {
 
           return distanceToTarget < distanceToClosest ? point : closest;
         });
-
         this.changeCell(nearestEnemy.computerPosition, nearestPosition);
       }
     }
