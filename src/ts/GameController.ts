@@ -333,6 +333,6 @@ export default class GameController {
     const [x0, y0] = [position1 % bordSize, Math.floor(position1 / bordSize)];
     const [x1, y1] = [position2 % bordSize, Math.floor(position2 / bordSize)];
 
-    return Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2);
+    return Math.sqrt(Math.abs(x1 - x0) ** 2 + Math.abs(y1 - y0) ** 2);
   }
 }

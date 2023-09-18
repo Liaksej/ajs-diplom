@@ -247,7 +247,14 @@ export default class GamePlay {
   }
 
   deselectAllCells() {
-    this.cells.forEach((o) => (o.className = "cell map-tile map-tile-center"));
+    this.cells.forEach((o) =>
+      o.classList.remove(
+        "selected",
+        "selected-red",
+        "selected-green",
+        "selected-yellow",
+      ),
+    );
   }
 
   deselectEnemyCell() {
