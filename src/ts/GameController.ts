@@ -82,6 +82,7 @@ export default class GameController {
     await this.gamePlay.showDamage(index, damage);
 
     position.character.health = position.character.health - damage;
+    this.gamePlay.deselectAllCells();
     this.gamePlay.redrawPositions(this.positions);
     this.gameState = GameState.from(this.gameState);
 
