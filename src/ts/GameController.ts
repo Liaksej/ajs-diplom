@@ -84,6 +84,7 @@ export default class GameController {
 
     position.character.health = position.character.health - damage;
     this.gamePlay.deselectAllCells();
+    this.deathFitrator();
     this.gamePlay.redrawPositions(this.positions);
     this.gameState = GameState.from(this.gameState);
 
@@ -328,5 +329,11 @@ export default class GameController {
         this.changeCell(nearestEnemy.computerPosition, nearestPosition);
       }
     }
+  }
+
+  private deathFitrator() {
+    this.positions = this.positions.filter(
+      (position) => position.character.health > 0,
+    );
   }
 }
