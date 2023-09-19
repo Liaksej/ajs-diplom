@@ -11,6 +11,7 @@ import { generateTeam } from "./generators";
 import GameStateService from "./GameStateService";
 import cursors from "./cursors";
 import GameState from "./GameState";
+import { getEuclideanDistance } from "./utils";
 
 export default class GameController {
   gamePlay: GamePlay;
@@ -287,7 +288,7 @@ export default class GameController {
 
     computer.forEach((computerPosition) => {
       gamer.forEach((gamerPosition) => {
-        const tempDistance = this.getEuclideanDistance(
+        const tempDistance = getEuclideanDistance(
           boardSize,
           computerPosition.position,
           gamerPosition.position,
@@ -316,7 +317,7 @@ export default class GameController {
 
         const nearestPosition = possiblePasses.reduce((closest, point) => {
           const distanceToTarget = nearestEnemy.distance;
-          const distanceToClosest = this.getEuclideanDistance(
+          const distanceToClosest = getEuclideanDistance(
             boardSize,
             closest,
             target,
@@ -327,16 +328,5 @@ export default class GameController {
         this.changeCell(nearestEnemy.computerPosition, nearestPosition);
       }
     }
-  }
-
-  private getEuclideanDistance(
-    bordSize: number,
-    position1: number,
-    position2: number,
-  ) {
-    const [x0, y0] = [position1 % bordSize, Math.floor(position1 / bordSize)];
-    const [x1, y1] = [position2 % bordSize, Math.floor(position2 / bordSize)];
-
-    return Math.sqrt(Math.abs(x1 - x0) ** 2 + Math.abs(y1 - y0) ** 2);
   }
 }

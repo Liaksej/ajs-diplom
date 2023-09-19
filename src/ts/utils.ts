@@ -78,9 +78,7 @@ export function checkPass(
     ? 2
     : 1;
 
-  const possiblePassRaw = possiblePassArrayGenerator(pass, boardSize, position);
-
-  return possibleActionArrayCleaner(pass, boardSize, position, possiblePassRaw);
+  return possiblePassArrayGenerator(pass, boardSize, position);
 }
 
 export function checkAttack(
@@ -95,27 +93,6 @@ export function checkAttack(
     : 4;
 
   return possibleAttackArrayGenerator(pass, boardSize, position);
-}
-
-function possibleActionArrayCleaner(
-  pass: number,
-  boardSize: number,
-  position: number,
-  possiblePassRaw: number[],
-) {
-  const x0 = position % boardSize;
-  const y0 = Math.floor(position / boardSize);
-
-  return possiblePassRaw.filter((index) => {
-    if (index < 0 || index >= boardSize ** 2) {
-      return false;
-    }
-
-    const x = index % boardSize;
-    const y = Math.floor(index / boardSize);
-
-    return Math.abs(x - x0) <= pass && Math.abs(y - y0) <= pass;
-  });
 }
 
 function possiblePassArrayGenerator(
@@ -133,7 +110,14 @@ function possiblePassArrayGenerator(
         const newY = y0 + dy;
         const newX = x0 + dx;
 
-        if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
+        if (
+          newX >= 0 &&
+          newX < boardSize &&
+          newY >= 0 &&
+          newY < boardSize &&
+          Math.abs(newX - x0) <= pass &&
+          Math.abs(newY - y0) <= pass
+        ) {
           passArray.push(newY * boardSize + newX);
         }
       }
@@ -167,4 +151,15 @@ function possibleAttackArrayGenerator(
   }
 
   return attackArray;
+}
+
+export function getEuclideanDistance(
+  bordSize: number,
+  position1: number,
+  position2: number,
+) {
+  const [x0, y0] = [position1 % bordSize, Math.floor(position1 / bordSize)];
+  const [x1, y1] = [position2 % bordSize, Math.floor(position2 / bordSize)];
+
+  return Math.sqrt(Math.abs(x1 - x0) ** 2 + Math.abs(y1 - y0) ** 2);
 }
