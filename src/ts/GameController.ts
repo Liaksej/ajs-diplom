@@ -12,7 +12,8 @@ import GameStateService from "./GameStateService";
 import cursors from "./cursors";
 import GameState from "./GameState";
 import { getEuclideanDistance } from "./utils";
-import { LevelType } from "./Character";
+import Character, { LevelType } from "./Character";
+import { gamePlay } from "./app";
 
 export default class GameController {
   gamePlay: GamePlay;
@@ -170,15 +171,18 @@ export default class GameController {
   private creatEnemyTeams(
     characters: number,
     maxLevel: LevelType = 1,
+    survivedCharacters: Character[] = [],
   ): PositionedCharacter[] {
     const enemyAllowedTeamMembers = [Undead, Vampire, Daemon];
-    const enemyTeamCells = this.getTeamCells(8, "enemy");
+    const enemyTeamCells = this.getTeamCells(this.gamePlay.boardSize, "enemy");
 
     const enemyTeam = generateTeam(
       enemyAllowedTeamMembers,
       maxLevel,
-      characters,
+      characters + survivedCharacters.length,
     );
+
+    enemyTeam.characters.push(...survivedCharacters);
 
     return enemyTeam.characters.map((enemyTeamMember) => {
       const cell = enemyTeamCells.splice(
@@ -192,6 +196,7 @@ export default class GameController {
   private creatGamerTeams(
     characters: number,
     maxLevel: LevelType = 1,
+    survivedCharacters: Character[] = [],
   ): PositionedCharacter[] {
     const gamerAllowedTeamMembers = [Bowman, Swordsman, Magician];
     const gamerTeamCells = this.getTeamCells(8, "gamer");
@@ -199,8 +204,10 @@ export default class GameController {
     const gamerTeam = generateTeam(
       gamerAllowedTeamMembers,
       maxLevel,
-      characters,
+      characters + survivedCharacters.length,
     );
+
+    gamerTeam.characters.push(...survivedCharacters);
 
     return gamerTeam.characters.map((gamerTeamMember) => {
       const cell = gamerTeamCells.splice(
@@ -354,36 +361,42 @@ export default class GameController {
   }
 
   private newLevel() {
-    const chekEnemyTeam = this.positions.some((position) =>
+    const chekEnemyTeam = this.positions.filter((position) =>
       ["undead", "daemon", "vampire"].includes(position.character.type),
     );
-    const checkPlayerTeam = this.positions.some((position) =>
+    const checkPlayerTeam = this.positions.filter((position) =>
       ["bowman", "swordsman", "magician"].includes(position.character.type),
     );
     if (
-      (!chekEnemyTeam && checkPlayerTeam) ||
-      (chekEnemyTeam && !checkPlayerTeam)
+      (chekEnemyTeam.length === 0 && checkPlayerTeam.length > 0) ||
+      (chekEnemyTeam.length > 0 && checkPlayerTeam.length === 0)
     ) {
       this.positions.forEach((position) => {
         position.character.levelUp();
         position.character.healthUp();
       });
 
-      let gamerCharacters = 0;
-      let enemyCharacters = 0;
-
-      if (chekEnemyTeam) {
-        enemyCharacters = this.positions.length;
-      } else {
-        gamerCharacters = this.positions.length;
-      }
-
       const nextLevel = this.positions[0].character.level;
 
+      const restEnemyTeam = chekEnemyTeam.map((position) => {
+        return position.character;
+      });
+
+      const restPlayerTeam = checkPlayerTeam.map((position) => {
+        return position.character;
+      });
+
       this.positions = [
-        ...this.positions,
-        ...this.creatEnemyTeams(2 + nextLevel - enemyCharacters, nextLevel),
-        ...this.creatGamerTeams(2 + nextLevel - gamerCharacters, nextLevel),
+        ...this.creatEnemyTeams(
+          2 + nextLevel - chekEnemyTeam.length,
+          nextLevel,
+          restEnemyTeam,
+        ),
+        ...this.creatGamerTeams(
+          2 + nextLevel - checkPlayerTeam.length,
+          nextLevel,
+          restPlayerTeam,
+        ),
       ];
     }
   }
