@@ -20,6 +20,12 @@ export default class GameController {
   stateService: GameStateService;
   private positions: PositionedCharacter[];
   private gameState: GameState;
+  private themesSelector = [
+    themes.prairie,
+    themes.desert,
+    themes.arctic,
+    themes.mountain,
+  ];
 
   constructor(gamePlay: GamePlay, stateService: GameStateService) {
     this.gamePlay = gamePlay;
@@ -32,7 +38,7 @@ export default class GameController {
   }
 
   init() {
-    this.gamePlay.drawUi(themes.prairie);
+    this.gamePlay.drawUi(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.positions);
     this.gamePlay.addCellEnterListener(this.onCellEnter);
     this.gamePlay.addCellLeaveListener(this.onCellLeave);
@@ -390,6 +396,7 @@ export default class GameController {
         ...this.creatEnemyTeams(1 + nextLevel, nextLevel, restEnemyTeam),
         ...this.creatGamerTeams(1 + nextLevel, nextLevel, restPlayerTeam),
       ];
+      this.gamePlay.changeTheme(this.themesSelector[nextLevel - 1]);
     }
   }
 }

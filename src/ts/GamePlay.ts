@@ -321,4 +321,10 @@ export default class GamePlay {
       throw new Error("GamePlay not bind to DOM");
     }
   }
+
+  changeTheme(theme: string) {
+    const block = this.container?.querySelector(".board");
+    block?.classList.remove("prairie", "desert", "arctic", "mountain");
+    block?.classList.add(theme);
+  }
 }
