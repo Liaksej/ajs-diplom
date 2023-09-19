@@ -179,7 +179,7 @@ export default class GameController {
     const enemyTeam = generateTeam(
       enemyAllowedTeamMembers,
       maxLevel,
-      characters + survivedCharacters.length,
+      characters - survivedCharacters.length,
     );
 
     enemyTeam.characters.push(...survivedCharacters);
@@ -199,12 +199,12 @@ export default class GameController {
     survivedCharacters: Character[] = [],
   ): PositionedCharacter[] {
     const gamerAllowedTeamMembers = [Bowman, Swordsman, Magician];
-    const gamerTeamCells = this.getTeamCells(8, "gamer");
+    const gamerTeamCells = this.getTeamCells(this.gamePlay.boardSize, "gamer");
 
     const gamerTeam = generateTeam(
       gamerAllowedTeamMembers,
       maxLevel,
-      characters + survivedCharacters.length,
+      characters - survivedCharacters.length,
     );
 
     gamerTeam.characters.push(...survivedCharacters);
@@ -221,7 +221,7 @@ export default class GameController {
   private getTeamCells(rowCells: number, role: string) {
     let allCells = rowCells ** 2 - 1;
     const teamCells = [];
-    const rows = allCells / rowCells;
+    const rows = (allCells + 1) / rowCells;
     for (let i = 0; i < rows; i++) {
       if (role === "gamer") {
         teamCells.push(allCells - rowCells + 2, allCells - rowCells + 1);
@@ -387,16 +387,8 @@ export default class GameController {
       });
 
       this.positions = [
-        ...this.creatEnemyTeams(
-          2 + nextLevel - chekEnemyTeam.length,
-          nextLevel,
-          restEnemyTeam,
-        ),
-        ...this.creatGamerTeams(
-          2 + nextLevel - checkPlayerTeam.length,
-          nextLevel,
-          restPlayerTeam,
-        ),
+        ...this.creatEnemyTeams(1 + nextLevel, nextLevel, restEnemyTeam),
+        ...this.creatGamerTeams(1 + nextLevel, nextLevel, restPlayerTeam),
       ];
     }
   }
