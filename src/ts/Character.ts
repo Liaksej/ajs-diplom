@@ -29,13 +29,18 @@ export interface CharacterInterface {
   defence: number;
   health: number;
   type: CharacterType;
+
+  levelUp(): void;
+
+  healthUp(): void;
 }
+
 export default class Character implements CharacterInterface {
-  public level: LevelType;
-  public attack: number;
-  public defence: number;
-  public health: number;
-  public type: CharacterType;
+  level: LevelType;
+  attack: number;
+  defence: number;
+  health: number;
+  type: CharacterType;
 
   constructor(level: LevelType, type: CharacterType) {
     this.level = level;
@@ -43,9 +48,28 @@ export default class Character implements CharacterInterface {
     this.defence = 0;
     this.health = 50;
     this.type = type;
+    this.levelUp = this.levelUp.bind(this);
+    if (this.level > 1) this.levelUp();
 
     if (new.target === Character) {
       throw new TypeError("Cannot construct Character instances directly");
+    }
+  }
+
+  levelUp() {
+    for (let i = 1; i < this.level; i++) {
+      this.attack = Math.max(
+        this.attack,
+        (this.attack * (80 + this.health)) / 100,
+      );
+    }
+  }
+
+  healthUp() {
+    const upHeal = this.health + 80;
+    this.health = upHeal > 100 ? 100 : upHeal;
+    if (this.level < 4) {
+      this.level = (this.level + 1) as LevelType;
     }
   }
 }
