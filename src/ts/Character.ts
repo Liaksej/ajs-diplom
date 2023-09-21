@@ -56,8 +56,8 @@ export default class Character implements CharacterInterface {
     }
   }
 
-  levelUp() {
-    for (let i = 1; i < this.level; i++) {
+  levelUp(level?: LevelType) {
+    for (let i = 1; i < (level || this.level + 1); i++) {
       this.attack = Math.max(
         this.attack,
         (this.attack * (80 + this.health)) / 100,

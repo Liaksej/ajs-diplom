@@ -13,13 +13,14 @@ import cursors from "./cursors";
 import GameState from "./GameState";
 import { getEuclideanDistance } from "./utils";
 import Character, { LevelType } from "./Character";
-import { gamePlay } from "./app";
 
 export default class GameController {
   gamePlay: GamePlay;
   stateService: GameStateService;
   private positions: PositionedCharacter[];
   private gameState: GameState;
+  private level: LevelType;
+  private isGameEnd = false;
   private themesSelector = [
     themes.prairie,
     themes.desert,
@@ -35,6 +36,7 @@ export default class GameController {
     this.onCellClick = this.onCellClick.bind(this);
     this.positions = [...this.creatEnemyTeams(2), ...this.creatGamerTeams(2)];
     this.gameState = new GameState();
+    this.level = 1;
   }
 
   init() {
@@ -47,6 +49,8 @@ export default class GameController {
   }
 
   private async onCellClick(index: number) {
+    if (this.isGameEnd) return;
+
     const selectedCharacter = this.getSelectedCharacter();
     const position = this.getPosition(index);
 
@@ -114,6 +118,7 @@ export default class GameController {
   }
 
   private onCellEnter(index: number) {
+    if (this.isGameEnd) return;
     const position = this.getPosition(index);
     const selected = this.getSelectedCharacter();
 
@@ -373,16 +378,19 @@ export default class GameController {
     const checkPlayerTeam = this.positions.filter((position) =>
       ["bowman", "swordsman", "magician"].includes(position.character.type),
     );
-    if (
-      (chekEnemyTeam.length === 0 && checkPlayerTeam.length > 0) ||
-      (chekEnemyTeam.length > 0 && checkPlayerTeam.length === 0)
-    ) {
+    if (chekEnemyTeam.length > 0 && checkPlayerTeam.length === 0) {
+      return this.gameOver();
+    }
+    if (chekEnemyTeam.length === 0 && checkPlayerTeam.length > 0) {
+      if (this.level === 4) {
+        return this.gameOver();
+      }
       this.positions.forEach((position) => {
         position.character.levelUp();
         position.character.healthUp();
       });
-
-      const nextLevel = this.positions[0].character.level;
+      this.level = (this.level + 1) as LevelType;
+      const nextLevel = this.level as LevelType;
 
       const restEnemyTeam = chekEnemyTeam.map((position) => {
         return position.character;
@@ -398,5 +406,12 @@ export default class GameController {
       ];
       this.gamePlay.changeTheme(this.themesSelector[nextLevel - 1]);
     }
+  }
+
+  private gameOver() {
+    this.isGameEnd = true;
+    this.gamePlay.deselectAllCells();
+    this.gamePlay.setCursor(cursors.auto);
+    this.positions = [];
   }
 }
