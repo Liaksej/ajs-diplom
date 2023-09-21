@@ -1,6 +1,7 @@
 import { calcHealthLevel, calcTileType } from "./utils";
 import PositionedCharacter from "./PositionedCharacter";
 import { BOARD_SIZE } from "./app";
+import GameController from "./GameController";
 
 export default class GamePlay {
   boardSize: number;
@@ -158,7 +159,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addNewGameListener(callback: never): void {
+  addNewGameListener(callback: (event: Event) => void) {
     this.newGameListeners.push(callback);
   }
 
@@ -206,7 +207,7 @@ export default class GamePlay {
 
   onNewGameClick(event: Event) {
     event.preventDefault();
-    this.newGameListeners.forEach((o: any) => o.call(null));
+    this.newGameListeners.forEach((o: EventListener) => o(event));
   }
 
   onSaveGameClick(event: Event) {

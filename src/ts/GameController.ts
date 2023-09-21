@@ -13,14 +13,13 @@ import cursors from "./cursors";
 import GameState from "./GameState";
 import { getEuclideanDistance } from "./utils";
 import Character, { LevelType } from "./Character";
-
 export default class GameController {
   gamePlay: GamePlay;
   stateService: GameStateService;
   private positions: PositionedCharacter[];
   private gameState: GameState;
   private level: LevelType;
-  private isGameEnd = false;
+  private isGameEnd: boolean;
   private themesSelector = [
     themes.prairie,
     themes.desert,
@@ -31,20 +30,19 @@ export default class GameController {
   constructor(gamePlay: GamePlay, stateService: GameStateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
-    this.onCellEnter = this.onCellEnter.bind(this);
-    this.onCellLeave = this.onCellLeave.bind(this);
-    this.onCellClick = this.onCellClick.bind(this);
     this.positions = [...this.creatEnemyTeams(2), ...this.creatGamerTeams(2)];
     this.gameState = new GameState();
     this.level = 1;
+    this.isGameEnd = false;
   }
 
   init() {
     this.gamePlay.drawUi(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.positions);
-    this.gamePlay.addCellEnterListener(this.onCellEnter);
-    this.gamePlay.addCellLeaveListener(this.onCellLeave);
-    this.gamePlay.addCellClickListener(this.onCellClick);
+    this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
+    this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
+    this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
+    this.gamePlay.addNewGameListener(this.newGame.bind(this));
     // TODO: load saved stated from stateService
   }
 
@@ -413,5 +411,14 @@ export default class GameController {
     this.gamePlay.deselectAllCells();
     this.gamePlay.setCursor(cursors.auto);
     this.positions = [];
+  }
+
+  private newGame() {
+    this.isGameEnd = false;
+    this.level = 1;
+    this.positions = [...this.creatEnemyTeams(2), ...this.creatGamerTeams(2)];
+    this.gamePlay.changeTheme(this.themesSelector[0]);
+    this.gamePlay.redrawPositions(this.positions);
+    this.gameState = new GameState();
   }
 }
