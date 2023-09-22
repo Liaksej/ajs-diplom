@@ -13,6 +13,7 @@ import cursors from "./cursors";
 import GameState from "./GameState";
 import { getEuclideanDistance } from "./utils";
 import Character, { LevelType } from "./Character";
+
 export default class GameController {
   gamePlay: GamePlay;
   stateService: GameStateService;
@@ -23,7 +24,6 @@ export default class GameController {
     themes.arctic,
     themes.mountain,
   ];
-
   constructor(gamePlay: GamePlay, stateService: GameStateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
@@ -35,7 +35,6 @@ export default class GameController {
     this.gameState.level = 1;
     this.gameState.isGameEnd = false;
   }
-
   init() {
     this.gamePlay.drawUi(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.gameState.positions);
@@ -43,7 +42,27 @@ export default class GameController {
     this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
     this.gamePlay.addNewGameListener(this.newGame.bind(this));
-    // TODO: load saved stated from stateService
+    this.gamePlay.addSaveGameListener(this.oSaveGame.bind(this));
+    this.gamePlay.addLoadGameListener(this.onLoadGame.bind(this));
+  }
+
+  private oSaveGame() {
+    const objectForSave = {
+      turn: this.gameState.turn,
+      level: this.gameState.level,
+      positions: this.gameState.positions,
+      isGameEnd: this.gameState.isGameEnd,
+    };
+
+    this.stateService.save(objectForSave);
+  }
+
+  private onLoadGame() {
+    this.gameState.loadData(this.stateService.load());
+
+    this.gamePlay.deselectAllCells();
+    this.gamePlay.redrawPositions(this.gameState.positions);
+    this.gamePlay.changeTheme(this.themesSelector[this.gameState.level - 1]);
   }
 
   private async onCellClick(index: number) {
