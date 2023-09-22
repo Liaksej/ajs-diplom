@@ -448,5 +448,6 @@ export default class GameController {
     ];
     this.gamePlay.changeTheme(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.gameState.positions);
+    this.gamePlay.deselectAllCells();
   }
 }
