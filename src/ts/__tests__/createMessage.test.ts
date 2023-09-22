@@ -8,7 +8,10 @@ import GameController from "../GameController";
 import { Bowman } from "../characters/Bowman";
 
 test("1 Method createMessage should create a correct message for character at given position", () => {
-  const gameCtrl = new GameController(new GamePlay(), new GameStateService({}));
+  const gameCtrl = new GameController(
+    new GamePlay(),
+    new GameStateService({} as Storage),
+  );
   gameCtrl["gameState"].positions = [
     {
       character: new Bowman(1),
@@ -27,7 +30,10 @@ test("1 Method createMessage should create a correct message for character at gi
 });
 
 test("2 Method createMessage should create a correct message for character at given position", () => {
-  const gameCtrl = new GameController(new GamePlay(), new GameStateService({}));
+  const gameCtrl = new GameController(
+    new GamePlay(),
+    new GameStateService({} as Storage),
+  );
   gameCtrl["gameState"].positions = [
     {
       character: new Bowman(1),
