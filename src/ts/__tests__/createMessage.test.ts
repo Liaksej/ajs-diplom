@@ -9,7 +9,7 @@ import { Bowman } from "../characters/Bowman";
 
 test("1 Method createMessage should create a correct message for character at given position", () => {
   const gameCtrl = new GameController(new GamePlay(), new GameStateService({}));
-  gameCtrl["positions"] = [
+  gameCtrl["gameState"].positions = [
     {
       character: new Bowman(1),
       position: 5,
@@ -28,7 +28,7 @@ test("1 Method createMessage should create a correct message for character at gi
 
 test("2 Method createMessage should create a correct message for character at given position", () => {
   const gameCtrl = new GameController(new GamePlay(), new GameStateService({}));
-  gameCtrl["positions"] = [
+  gameCtrl["gameState"].positions = [
     {
       character: new Bowman(1),
       position: 5,

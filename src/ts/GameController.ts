@@ -16,10 +16,7 @@ import Character, { LevelType } from "./Character";
 export default class GameController {
   gamePlay: GamePlay;
   stateService: GameStateService;
-  private positions: PositionedCharacter[];
   private gameState: GameState;
-  private level: LevelType;
-  private isGameEnd: boolean;
   private themesSelector = [
     themes.prairie,
     themes.desert,
@@ -30,15 +27,18 @@ export default class GameController {
   constructor(gamePlay: GamePlay, stateService: GameStateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
-    this.positions = [...this.creatEnemyTeams(2), ...this.creatGamerTeams(2)];
     this.gameState = new GameState();
-    this.level = 1;
-    this.isGameEnd = false;
+    this.gameState.positions = [
+      ...this.creatEnemyTeams(2),
+      ...this.creatGamerTeams(2),
+    ];
+    this.gameState.level = 1;
+    this.gameState.isGameEnd = false;
   }
 
   init() {
     this.gamePlay.drawUi(this.themesSelector[0]);
-    this.gamePlay.redrawPositions(this.positions);
+    this.gamePlay.redrawPositions(this.gameState.positions);
     this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
     this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
@@ -47,7 +47,7 @@ export default class GameController {
   }
 
   private async onCellClick(index: number) {
-    if (this.isGameEnd) return;
+    if (this.gameState.isGameEnd) return;
 
     const selectedCharacter = this.getSelectedCharacter();
     const position = this.getPosition(index);
@@ -96,8 +96,8 @@ export default class GameController {
     this.gamePlay.deselectAllCells();
     this.deathFitrator();
     this.newLevel();
-    this.gamePlay.redrawPositions(this.positions);
-    this.gameState = GameState.from(this.gameState);
+    this.gamePlay.redrawPositions(this.gameState.positions);
+    this.gameState.from(this.gameState);
 
     if (this.gameState.turn === "computer") {
       this.computerPass();
@@ -107,8 +107,8 @@ export default class GameController {
   private changeCell(selectedCharacter: PositionedCharacter, index: number) {
     selectedCharacter?.changePosition(index);
     this.gamePlay.deselectAllCells();
-    this.gamePlay.redrawPositions(this.positions);
-    this.gameState = GameState.from(this.gameState);
+    this.gamePlay.redrawPositions(this.gameState.positions);
+    this.gameState.from(this.gameState);
 
     if (this.gameState.turn === "computer") {
       this.computerPass();
@@ -116,7 +116,7 @@ export default class GameController {
   }
 
   private onCellEnter(index: number) {
-    if (this.isGameEnd) return;
+    if (this.gameState.isGameEnd) return;
     const position = this.getPosition(index);
     const selected = this.getSelectedCharacter();
 
@@ -160,17 +160,19 @@ export default class GameController {
   }
 
   private getPosition(index: number) {
-    return this.positions.find((position) => position.position === index);
+    return this.gameState.positions.find(
+      (position) => position.position === index,
+    );
   }
 
   private getSelectedCharacter() {
-    return this.positions.find((position) =>
+    return this.gameState.positions.find((position) =>
       this.gamePlay.findSelectedCell().includes(position.position),
     );
   }
 
   private createToolpitMessage(index: number): string {
-    const position = this.positions.find(
+    const position = this.gameState.positions.find(
       (position) => position.position === index,
     );
 
@@ -244,11 +246,11 @@ export default class GameController {
   }
 
   private computerPass() {
-    const gamer = this.positions.filter((position) =>
+    const gamer = this.gameState.positions.filter((position) =>
       ["bowman", "swordsman", "magician"].includes(position.character.type),
     );
 
-    const computer = this.positions.filter((position) =>
+    const computer = this.gameState.positions.filter((position) =>
       ["undead", "vampire", "daemon"].includes(position.character.type),
     );
 
@@ -364,31 +366,31 @@ export default class GameController {
   }
 
   private deathFitrator() {
-    this.positions = this.positions.filter(
+    this.gameState.positions = this.gameState.positions.filter(
       (position) => position.character.health > 0,
     );
   }
 
   private newLevel() {
-    const chekEnemyTeam = this.positions.filter((position) =>
+    const chekEnemyTeam = this.gameState.positions.filter((position) =>
       ["undead", "daemon", "vampire"].includes(position.character.type),
     );
-    const checkPlayerTeam = this.positions.filter((position) =>
+    const checkPlayerTeam = this.gameState.positions.filter((position) =>
       ["bowman", "swordsman", "magician"].includes(position.character.type),
     );
     if (chekEnemyTeam.length > 0 && checkPlayerTeam.length === 0) {
       return this.gameOver();
     }
     if (chekEnemyTeam.length === 0 && checkPlayerTeam.length > 0) {
-      if (this.level === 4) {
+      if (this.gameState.level === 4) {
         return this.gameOver();
       }
-      this.positions.forEach((position) => {
+      this.gameState.positions.forEach((position) => {
         position.character.levelUp();
         position.character.healthUp();
       });
-      this.level = (this.level + 1) as LevelType;
-      const nextLevel = this.level as LevelType;
+      this.gameState.level = (this.gameState.level + 1) as LevelType;
+      const nextLevel = this.gameState.level as LevelType;
 
       const restEnemyTeam = chekEnemyTeam.map((position) => {
         return position.character;
@@ -398,7 +400,7 @@ export default class GameController {
         return position.character;
       });
 
-      this.positions = [
+      this.gameState.positions = [
         ...this.creatEnemyTeams(1 + nextLevel, nextLevel, restEnemyTeam),
         ...this.creatGamerTeams(1 + nextLevel, nextLevel, restPlayerTeam),
       ];
@@ -407,18 +409,19 @@ export default class GameController {
   }
 
   private gameOver() {
-    this.isGameEnd = true;
+    this.gameState.isGameEnd = true;
     this.gamePlay.deselectAllCells();
     this.gamePlay.setCursor(cursors.auto);
-    this.positions = [];
+    this.gameState.positions = [];
   }
 
   private newGame() {
-    this.isGameEnd = false;
-    this.level = 1;
-    this.positions = [...this.creatEnemyTeams(2), ...this.creatGamerTeams(2)];
-    this.gamePlay.changeTheme(this.themesSelector[0]);
-    this.gamePlay.redrawPositions(this.positions);
     this.gameState = new GameState();
+    this.gameState.positions = [
+      ...this.creatEnemyTeams(2),
+      ...this.creatGamerTeams(2),
+    ];
+    this.gamePlay.changeTheme(this.themesSelector[0]);
+    this.gamePlay.redrawPositions(this.gameState.positions);
   }
 }
