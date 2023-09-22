@@ -93,7 +93,7 @@ export default class GameController {
     await this.gamePlay.showDamage(index, damage);
 
     position.character.health = position.character.health - damage;
-    this.gamePlay.deselectAllCells();
+    // this.gamePlay.deselectAllCells();
     this.deathFitrator();
     this.newLevel();
     this.gamePlay.redrawPositions(this.gameState.positions);
@@ -366,9 +366,13 @@ export default class GameController {
   }
 
   private deathFitrator() {
+    const numberOfHeroes = this.gameState.positions.length;
     this.gameState.positions = this.gameState.positions.filter(
       (position) => position.character.health > 0,
     );
+    if (this.gameState.positions.length < numberOfHeroes) {
+      this.gamePlay.deselectAllCells();
+    }
   }
 
   private newLevel() {
@@ -391,6 +395,8 @@ export default class GameController {
       });
       this.gameState.level = (this.gameState.level + 1) as LevelType;
       const nextLevel = this.gameState.level as LevelType;
+
+      this.gameState.turn = "computer";
 
       const restEnemyTeam = chekEnemyTeam.map((position) => {
         return position.character;
