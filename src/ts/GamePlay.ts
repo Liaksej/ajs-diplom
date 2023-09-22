@@ -1,7 +1,6 @@
 import { calcHealthLevel, calcTileType } from "./utils";
 import PositionedCharacter from "./PositionedCharacter";
 import { BOARD_SIZE } from "./app";
-import GameController from "./GameController";
 
 export default class GamePlay {
   boardSize: number;
@@ -14,7 +13,9 @@ export default class GamePlay {
   newGameListeners: EventListener[];
   saveGameListeners: EventListener[];
   loadGameListeners: EventListener[];
-  [key: string]: any;
+  newGameEl: HTMLElement | null;
+  loadGameEl: HTMLElement | null;
+  saveGameEl: HTMLElement | null;
 
   constructor() {
     this.boardSize = BOARD_SIZE;
@@ -27,6 +28,9 @@ export default class GamePlay {
     this.newGameListeners = [];
     this.saveGameListeners = [];
     this.loadGameListeners = [];
+    this.newGameEl = null;
+    this.saveGameEl = null;
+    this.loadGameEl = null;
   }
 
   bindToDOM(container: HTMLElement | null) {
@@ -60,13 +64,13 @@ export default class GamePlay {
       this.saveGameEl = this.container.querySelector("[data-id=action-save]");
       this.loadGameEl = this.container.querySelector("[data-id=action-load]");
 
-      this.newGameEl.addEventListener("click", (event: Event) =>
+      this.newGameEl?.addEventListener("click", (event: Event) =>
         this.onNewGameClick(event),
       );
-      this.saveGameEl.addEventListener("click", (event: Event) =>
+      this.saveGameEl?.addEventListener("click", (event: Event) =>
         this.onSaveGameClick(event),
       );
-      this.loadGameEl.addEventListener("click", (event: Event) =>
+      this.loadGameEl?.addEventListener("click", (event: Event) =>
         this.onLoadGameClick(event),
       );
 
@@ -217,7 +221,7 @@ export default class GamePlay {
 
   onLoadGameClick(event: Event) {
     event.preventDefault();
-    this.loadGameListeners.forEach((o: any) => o.call(null));
+    this.loadGameListeners.forEach((o: EventListener) => o(event));
   }
 
   static showError(message: string) {
