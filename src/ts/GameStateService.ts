@@ -1,4 +1,3 @@
-import GameState from "./GameState";
 import { LevelType } from "./Character";
 import PositionedCharacter from "./PositionedCharacter";
 
@@ -26,7 +25,6 @@ export default class GameStateService {
       const base64Data = btoa(
         String.fromCharCode.apply(null, Array.from(binaryArray)),
       );
-      console.log(base64Data);
       this.storage.setItem("state", base64Data);
     } catch (e) {
       throw new Error("Failed to save state: " + e);
@@ -48,7 +46,6 @@ export default class GameStateService {
         binaryArray[i] = binaryState.charCodeAt(i);
       }
       const data = new TextDecoder().decode(binaryArray);
-      console.log(JSON.parse(data));
       return JSON.parse(data);
     } catch (e) {
       throw new Error("Invalid state" + e);
