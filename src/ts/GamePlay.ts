@@ -168,7 +168,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addSaveGameListener(callback: never) {
+  addSaveGameListener(callback: (event: Event) => void) {
     this.saveGameListeners.push(callback);
   }
 
@@ -177,7 +177,7 @@ export default class GamePlay {
    *
    * @param callback
    */
-  addLoadGameListener(callback: never): void {
+  addLoadGameListener(callback: (event: Event) => void) {
     this.loadGameListeners.push(callback);
   }
 
@@ -212,7 +212,7 @@ export default class GamePlay {
 
   onSaveGameClick(event: Event) {
     event.preventDefault();
-    this.saveGameListeners.forEach((o: any) => o.call(null));
+    this.saveGameListeners.forEach((o: EventListener) => o(event));
   }
 
   onLoadGameClick(event: Event) {
