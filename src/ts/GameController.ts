@@ -28,12 +28,12 @@ export default class GameController {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
     this.gameState = new GameState();
-    this.gameState.positions = [
-      ...this.creatEnemyTeams(2),
-      ...this.creatGamerTeams(2),
-    ];
     this.gameState.level = 1;
     this.gameState.isGameEnd = false;
+    this.gameState.positions = [
+      ...this.creatEnemyTeams(2, this.gameState.level),
+      ...this.creatGamerTeams(2, this.gameState.level),
+    ];
   }
   init() {
     this.gamePlay.drawUi(this.themesSelector[0]);
@@ -84,8 +84,7 @@ export default class GameController {
       selectedCharacter?.attackField.includes(index) &&
       ["undead", "vampire", "daemon"].includes(position.character.type)
     ) {
-      await this.causeDamage(selectedCharacter, position, index);
-      return;
+      return this.causeDamage(selectedCharacter, position, index);
     }
 
     if (
@@ -200,8 +199,7 @@ export default class GameController {
 
   private creatEnemyTeams(
     characters: number,
-    maxLevel: LevelType = 1,
-    survivedCharacters: Character[] = [],
+    maxLevel: LevelType,
   ): PositionedCharacter[] {
     const enemyAllowedTeamMembers = [Undead, Vampire, Daemon];
     const enemyTeamCells = this.getTeamCells(this.gamePlay.boardSize, "enemy");
@@ -209,10 +207,8 @@ export default class GameController {
     const enemyTeam = generateTeam(
       enemyAllowedTeamMembers,
       maxLevel,
-      characters - survivedCharacters.length,
+      characters,
     );
-
-    enemyTeam.characters.push(...survivedCharacters);
 
     return enemyTeam.characters.map((enemyTeamMember) => {
       const cell = enemyTeamCells.splice(
@@ -225,7 +221,7 @@ export default class GameController {
 
   private creatGamerTeams(
     characters: number,
-    maxLevel: LevelType = 1,
+    maxLevel: LevelType,
     survivedCharacters: Character[] = [],
   ): PositionedCharacter[] {
     const gamerAllowedTeamMembers = [Bowman, Swordsman, Magician];
@@ -408,25 +404,23 @@ export default class GameController {
       if (this.gameState.level === 4) {
         return this.gameOver();
       }
-      this.gameState.positions.forEach((position) => {
-        position.character.levelUp();
-        position.character.healthUp();
-      });
+
       this.gameState.level = (this.gameState.level + 1) as LevelType;
       const nextLevel = this.gameState.level as LevelType;
 
-      this.gameState.turn = "computer";
-
-      const restEnemyTeam = chekEnemyTeam.map((position) => {
-        return position.character;
+      this.gameState.positions.forEach((position) => {
+        position.character.levelUp(nextLevel);
+        position.character.healthUp();
       });
+
+      this.gameState.turn = "computer";
 
       const restPlayerTeam = checkPlayerTeam.map((position) => {
         return position.character;
       });
 
       this.gameState.positions = [
-        ...this.creatEnemyTeams(1 + nextLevel, nextLevel, restEnemyTeam),
+        ...this.creatEnemyTeams(1 + nextLevel, nextLevel),
         ...this.creatGamerTeams(1 + nextLevel, nextLevel, restPlayerTeam),
       ];
       this.gamePlay.changeTheme(this.themesSelector[nextLevel - 1]);
@@ -443,8 +437,8 @@ export default class GameController {
   private newGame() {
     this.gameState = new GameState();
     this.gameState.positions = [
-      ...this.creatEnemyTeams(2),
-      ...this.creatGamerTeams(2),
+      ...this.creatEnemyTeams(2, this.gameState.level),
+      ...this.creatGamerTeams(2, this.gameState.level),
     ];
     this.gamePlay.changeTheme(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.gameState.positions);
