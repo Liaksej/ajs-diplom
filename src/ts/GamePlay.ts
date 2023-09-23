@@ -203,6 +203,13 @@ export default class GamePlay {
 
   onCellClick(event: Event) {
     event.preventDefault();
+
+    const clickedElement = event.currentTarget as HTMLElement;
+
+    if (this.cells.indexOf(clickedElement) === -1) {
+      return;
+    }
+
     const index = this.cells.indexOf(event.currentTarget as HTMLElement);
     this.cellClickListeners.forEach((o: (index: number) => void) =>
       o.call(null, index),
@@ -331,5 +338,17 @@ export default class GamePlay {
     const block = this.container?.querySelector(".board");
     block?.classList.remove("prairie", "desert", "arctic", "mountain");
     block?.classList.add(theme);
+  }
+
+  checkSelectedEmptyCell() {
+    return this.cells.some(
+      (o) => o.classList.contains("selected-yellow") && o.children.length === 0,
+    );
+  }
+
+  checkSelectedemptyEnemyCell() {
+    return this.cells.some(
+      (o) => o.classList.contains("selected-red") && o.children.length === 0,
+    );
   }
 }
