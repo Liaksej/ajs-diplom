@@ -1,10 +1,14 @@
 image: Ubuntu1804  # образ для сборки
 
+environment:
+  GITHUB_TOKEN:
+    secure: rKdsw1KgWV2Z2QuzJ+kmvGT7+WFjazcjsGOZ9hfyf1XRqxp+19cJXCYItRfju89y
+
 stack: node 16  # окружение
 
 branches:
   only:
-    - master  # ветка git
+    - main  # ветка git
 
 cache: node_modules  # кеширование
 
@@ -13,8 +17,15 @@ install:
 
 build: off  # отключаем встроенную в appveyor систему сборки
 
-build_script:
-  - npm run build   # команда сборки
-
 test_script:
   - npm run lint && npm test  # скрипт тестирования
+
+build_script:
+  - npm run build
+
+deploy_script:  # скрипт развёртывания
+  - git config --global credential.helper store
+  - git config --global user.name AppVeyor
+  - git config --global user.email ci@appveyor.com
+  - echo "https://$GITHUB_TOKEN:x-oauth-basic@github.com" > "$HOME/.git-credentials"
+  - npx push-dir --dir=dist --branch=gh-pages --force --verbose
