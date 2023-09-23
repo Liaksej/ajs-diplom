@@ -48,7 +48,7 @@ export default class GameStateService {
       const data = new TextDecoder().decode(binaryArray);
       return JSON.parse(data);
     } catch (e) {
-      throw new Error("Invalid state" + e);
+      throw new Error("Invalid state");
     }
   }
 }
