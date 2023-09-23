@@ -42,7 +42,7 @@ export default class GameController {
     this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
     this.gamePlay.addNewGameListener(this.newGame.bind(this));
-    this.gamePlay.addSaveGameListener(this.oSaveGame.bind(this));
+    this.gamePlay.addSaveGameListener(this.onSaveGame.bind(this));
     this.gamePlay.addLoadGameListener(this.onLoadGame.bind(this));
   }
 
@@ -236,6 +236,12 @@ export default class GameController {
     });
   }
 
+  /**
+   * Executes the computer's turn in the game by selecting a target and performing an attack or movement action.
+   *
+   * @private
+   * @function computerPass
+   */
   private computerPass() {
     const gamer = this.gameState.positions.filter((position) =>
       ["bowman", "swordsman", "magician"].includes(position.character.type),
@@ -300,6 +306,14 @@ export default class GameController {
     return null;
   }
 
+  /**
+   * Moves the computer-controlled characters towards the nearest enemy character.
+   *
+   * @param {PositionedCharacter[]} gamer - The array containing the player-controlled characters.
+   * @param {PositionedCharacter[]} computer - The array containing the computer-controlled characters.
+   *
+   * @return {void}
+   */
   private moveTowardsEnemy(
     gamer: PositionedCharacter[],
     computer: PositionedCharacter[],
@@ -354,6 +368,12 @@ export default class GameController {
     }
   }
 
+  /**
+   * Checks if all selected cells are valid based on the number of heroes and game state.
+   *
+   * @param {number} [numberOfHeroes] - The number of heroes.
+   * @returns {void}
+   */
   private selectedCellsChecker(numberOfHeroes?: number) {
     if (
       numberOfHeroes &&
@@ -424,7 +444,7 @@ export default class GameController {
     this.gamePlay.deselectAllCells();
   }
 
-  private oSaveGame() {
+  private onSaveGame() {
     const objectForSave = {
       turn: this.gameState.turn,
       level: this.gameState.level,
