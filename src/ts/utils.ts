@@ -1,5 +1,4 @@
 /**
- * @todo
  * @param index - индекс поля
  * @param boardSize - размер квадратного поля (в длину или ширину)
  * @returns строка - тип ячейки на поле:
@@ -13,17 +12,8 @@
  * right
  * left
  * center
- *
- * @example
- * ```js
- * calcTileType(0, 8); // 'top-left'
- * calcTileType(1, 8); // 'top'
- * calcTileType(63, 8); // 'bottom-right'
- * calcTileType(7, 7); // 'left'
- * ```
  * */
 export function calcTileType(index: number, boardSize: number) {
-  // TODO: ваш код будет тут
   const leftArray = [...Array(boardSize - 2)].map((element, index) => {
     element = boardSize + boardSize * index;
     return element;
@@ -162,4 +152,20 @@ export function getEuclideanDistance(
   const [x1, y1] = [position2 % bordSize, Math.floor(position2 / bordSize)];
 
   return Math.sqrt(Math.abs(x1 - x0) ** 2 + Math.abs(y1 - y0) ** 2);
+}
+
+export function getTeamCells(rowCells: number, role: string) {
+  let allCells = rowCells ** 2 - 1;
+  const teamCells = [];
+  const rows = (allCells + 1) / rowCells;
+  for (let i = 0; i < rows; i++) {
+    if (role === "gamer") {
+      teamCells.push(allCells - rowCells + 2, allCells - rowCells + 1);
+    }
+    if (role === "enemy") {
+      teamCells.push(allCells, allCells - 1);
+    }
+    allCells = allCells - rowCells;
+  }
+  return teamCells;
 }

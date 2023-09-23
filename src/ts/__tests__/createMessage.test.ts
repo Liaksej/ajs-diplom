@@ -24,7 +24,7 @@ test("1 Method createMessage should create a correct message for character at gi
       },
     },
   ];
-  expect(gameCtrl["createToolpitMessage"](5)).toBe(
+  expect(gameCtrl["createTooltipMessage"](5)).toBe(
     "\u{1F396} 1 \u{2694} 25 \u{1F6E1} 25 \u{2764} 50",
   );
 });
@@ -46,7 +46,7 @@ test("2 Method createMessage should create a correct message for character at gi
       },
     },
   ];
-  expect(gameCtrl["createToolpitMessage"](6)).toBe(
+  expect(gameCtrl["createTooltipMessage"](6)).toBe(
     "\u{1F396} undefined \u{2694} undefined \u{1F6E1} undefined \u{2764} undefined",
   );
 });

@@ -11,7 +11,7 @@ import { generateTeam } from "./generators";
 import GameStateService from "./GameStateService";
 import cursors from "./cursors";
 import GameState from "./GameState";
-import { getEuclideanDistance } from "./utils";
+import { getEuclideanDistance, getTeamCells } from "./utils";
 import Character, { LevelType } from "./Character";
 
 export default class GameController {
@@ -139,7 +139,7 @@ export default class GameController {
     const selected = this.getSelectedCharacter();
 
     if (position) {
-      this.gamePlay.showCellTooltip(this.createToolpitMessage(index), index);
+      this.gamePlay.showCellTooltip(this.createTooltipMessage(index), index);
 
       if (
         ["swordsman", "bowman", "magician"].includes(position.character.type)
@@ -189,7 +189,7 @@ export default class GameController {
     );
   }
 
-  private createToolpitMessage(index: number): string {
+  private createTooltipMessage(index: number): string {
     const position = this.gameState.positions.find(
       (position) => position.position === index,
     );
@@ -202,7 +202,7 @@ export default class GameController {
     maxLevel: LevelType,
   ): PositionedCharacter[] {
     const enemyAllowedTeamMembers = [Undead, Vampire, Daemon];
-    const enemyTeamCells = this.getTeamCells(this.gamePlay.boardSize, "enemy");
+    const enemyTeamCells = getTeamCells(this.gamePlay.boardSize, "enemy");
 
     const enemyTeam = generateTeam(
       enemyAllowedTeamMembers,
@@ -225,7 +225,7 @@ export default class GameController {
     survivedCharacters: Character[] = [],
   ): PositionedCharacter[] {
     const gamerAllowedTeamMembers = [Bowman, Swordsman, Magician];
-    const gamerTeamCells = this.getTeamCells(this.gamePlay.boardSize, "gamer");
+    const gamerTeamCells = getTeamCells(this.gamePlay.boardSize, "gamer");
 
     const gamerTeam = generateTeam(
       gamerAllowedTeamMembers,
@@ -242,22 +242,6 @@ export default class GameController {
       )[0];
       return new PositionedCharacter(gamerTeamMember, cell);
     });
-  }
-
-  private getTeamCells(rowCells: number, role: string) {
-    let allCells = rowCells ** 2 - 1;
-    const teamCells = [];
-    const rows = (allCells + 1) / rowCells;
-    for (let i = 0; i < rows; i++) {
-      if (role === "gamer") {
-        teamCells.push(allCells - rowCells + 2, allCells - rowCells + 1);
-      }
-      if (role === "enemy") {
-        teamCells.push(allCells, allCells - 1);
-      }
-      allCells = allCells - rowCells;
-    }
-    return teamCells;
   }
 
   private computerPass() {
