@@ -46,25 +46,6 @@ export default class GameController {
     this.gamePlay.addLoadGameListener(this.onLoadGame.bind(this));
   }
 
-  private oSaveGame() {
-    const objectForSave = {
-      turn: this.gameState.turn,
-      level: this.gameState.level,
-      positions: this.gameState.positions,
-      isGameEnd: this.gameState.isGameEnd,
-    };
-
-    this.stateService.save(objectForSave);
-  }
-
-  private onLoadGame() {
-    this.gameState.loadData(this.stateService.load());
-
-    this.gamePlay.deselectAllCells();
-    this.gamePlay.redrawPositions(this.gameState.positions);
-    this.gamePlay.changeTheme(this.themesSelector[this.gameState.level - 1]);
-  }
-
   private async onCellClick(index: number) {
     if (this.gameState.isGameEnd) return;
 
@@ -111,10 +92,14 @@ export default class GameController {
     await this.gamePlay.showDamage(index, damage);
 
     position.character.health = position.character.health - damage;
-    // this.gamePlay.deselectAllCells();
-    this.deathFitrator();
+    const charactersCount = this.gameState.positions.length;
+    this.gameState.positions = this.gameState.positions.filter(
+      (position) => position.character.health > 0,
+    );
     this.newLevel();
     this.gamePlay.redrawPositions(this.gameState.positions);
+
+    this.selectedCellsChecker(charactersCount);
     this.gameState.from(this.gameState);
 
     if (this.gameState.turn === "computer") {
@@ -124,9 +109,16 @@ export default class GameController {
 
   private changeCell(selectedCharacter: PositionedCharacter, index: number) {
     selectedCharacter?.changePosition(index);
-    this.gamePlay.deselectAllCells();
-    this.gamePlay.redrawPositions(this.gameState.positions);
+    if (
+      ["swordsman", "bowman", "magician"].includes(
+        selectedCharacter?.character.type,
+      )
+    ) {
+      this.gamePlay.deselectAllCells();
+      this.gamePlay.selectCell(index);
+    }
     this.gameState.from(this.gameState);
+    this.gamePlay.redrawPositions(this.gameState.positions);
 
     if (this.gameState.turn === "computer") {
       this.computerPass();
@@ -341,50 +333,51 @@ export default class GameController {
       nearestEnemy.distance !== Infinity &&
       nearestEnemy.computerPosition !== null
     ) {
-      const target = nearestEnemy.enemy?.position;
+      const target = nearestEnemy.enemy.position;
       let possiblePasses = nearestEnemy.computerPosition.moveField;
 
-      if (typeof target === "number") {
-        possiblePasses = possiblePasses.filter((point) =>
-          this.gamePlay.checkEmptyCell(point),
+      possiblePasses = possiblePasses.filter((point) =>
+        this.gamePlay.checkEmptyCell(point),
+      );
+      const nearestPosition = possiblePasses.reduce((closest, point) => {
+        const distanceToTarget = nearestEnemy.distance;
+        const distanceToClosest = getEuclideanDistance(
+          boardSize,
+          closest,
+          target,
         );
 
-        const nearestPosition = possiblePasses.reduce((closest, point) => {
-          const distanceToTarget = nearestEnemy.distance;
-          const distanceToClosest = getEuclideanDistance(
-            boardSize,
-            closest,
-            target,
-          );
-
-          return distanceToTarget < distanceToClosest ? point : closest;
-        });
-        this.changeCell(nearestEnemy.computerPosition, nearestPosition);
-      }
+        return distanceToTarget < distanceToClosest ? point : closest;
+      });
+      this.changeCell(nearestEnemy.computerPosition, nearestPosition);
+      this.selectedCellsChecker();
     }
   }
 
-  private deathFitrator() {
-    const numberOfHeroes = this.gameState.positions.length;
-    this.gameState.positions = this.gameState.positions.filter(
-      (position) => position.character.health > 0,
-    );
-    if (this.gameState.positions.length < numberOfHeroes) {
-      this.gamePlay.deselectAllCells();
+  private selectedCellsChecker(numberOfHeroes?: number) {
+    if (
+      numberOfHeroes &&
+      this.gameState.positions.length < numberOfHeroes &&
+      this.gamePlay.checkSelectedEmptyCell()
+    ) {
+      return this.gamePlay.deselectAllCells();
+    }
+
+    if (this.gamePlay.checkSelectedemptyEnemyCell()) {
+      return this.gamePlay.deselectEnemyCell();
     }
   }
-
   private newLevel() {
-    const chekEnemyTeam = this.gameState.positions.filter((position) =>
+    const checkEnemyTeam = this.gameState.positions.filter((position) =>
       ["undead", "daemon", "vampire"].includes(position.character.type),
     );
     const checkPlayerTeam = this.gameState.positions.filter((position) =>
       ["bowman", "swordsman", "magician"].includes(position.character.type),
     );
-    if (chekEnemyTeam.length > 0 && checkPlayerTeam.length === 0) {
+    if (checkPlayerTeam.length === 0) {
       return this.gameOver();
     }
-    if (chekEnemyTeam.length === 0 && checkPlayerTeam.length > 0) {
+    if (checkEnemyTeam.length === 0) {
       if (this.gameState.level === 4) {
         return this.gameOver();
       }
@@ -408,6 +401,8 @@ export default class GameController {
         ...this.creatGamerTeams(1 + nextLevel, nextLevel, restPlayerTeam),
       ];
       this.gamePlay.changeTheme(this.themesSelector[nextLevel - 1]);
+
+      this.gamePlay.deselectAllCells();
     }
   }
 
@@ -427,5 +422,24 @@ export default class GameController {
     this.gamePlay.changeTheme(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.gameState.positions);
     this.gamePlay.deselectAllCells();
+  }
+
+  private oSaveGame() {
+    const objectForSave = {
+      turn: this.gameState.turn,
+      level: this.gameState.level,
+      positions: this.gameState.positions,
+      isGameEnd: this.gameState.isGameEnd,
+    };
+
+    this.stateService.save(objectForSave);
+  }
+
+  private onLoadGame() {
+    this.gameState.loadData(this.stateService.load());
+
+    this.gamePlay.deselectAllCells();
+    this.gamePlay.redrawPositions(this.gameState.positions);
+    this.gamePlay.changeTheme(this.themesSelector[this.gameState.level - 1]);
   }
 }
