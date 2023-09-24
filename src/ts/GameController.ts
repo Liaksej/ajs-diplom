@@ -317,7 +317,7 @@ export default class GameController {
   private moveTowardsEnemy(
     gamer: PositionedCharacter[],
     computer: PositionedCharacter[],
-  ) {
+  ): void {
     const boardSize = this.gamePlay.boardSize;
 
     const nearestEnemy: {
@@ -374,7 +374,7 @@ export default class GameController {
    * @param {number} [numberOfHeroes] - The number of heroes.
    * @returns {void}
    */
-  private selectedCellsChecker(numberOfHeroes?: number) {
+  private selectedCellsChecker(numberOfHeroes?: number): void {
     if (
       numberOfHeroes &&
       this.gameState.positions.length < numberOfHeroes &&
