@@ -64,6 +64,12 @@ export default class GamePlay {
       this.saveGameEl = this.container.querySelector("[data-id=action-save]");
       this.loadGameEl = this.container.querySelector("[data-id=action-load]");
 
+      if (!localStorage.getItem("state")) {
+        this.loadGameEl?.setAttribute("disabled", "true");
+      } else {
+        this.loadGameEl?.removeAttribute("disabled");
+      }
+
       this.newGameEl?.addEventListener("click", (event: Event) =>
         this.onNewGameClick(event),
       );
@@ -224,11 +230,23 @@ export default class GamePlay {
   onSaveGameClick(event: Event) {
     event.preventDefault();
     this.saveGameListeners.forEach((o: EventListener) => o(event));
+
+    if (!localStorage.getItem("state")) {
+      this.loadGameEl?.setAttribute("disabled", "true");
+    } else {
+      this.loadGameEl?.removeAttribute("disabled");
+    }
   }
 
   onLoadGameClick(event: Event) {
     event.preventDefault();
     this.loadGameListeners.forEach((o: EventListener) => o(event));
+
+    if (!localStorage.getItem("state")) {
+      this.loadGameEl?.setAttribute("disabled", "true");
+    } else {
+      this.loadGameEl?.removeAttribute("disabled");
+    }
   }
 
   static showError(message: string) {
@@ -350,5 +368,21 @@ export default class GamePlay {
     return this.cells.some(
       (o) => o.classList.contains("selected-red") && o.children.length === 0,
     );
+  }
+
+  drawScore(objectWithCount: { gamer: number; computer: number }) {
+    const scoreElement = document.querySelector(".score");
+    if (scoreElement) {
+      scoreElement.innerHTML = `<span>${objectWithCount.gamer.toFixed(
+        1,
+      )}</span> : <span>${objectWithCount.computer.toFixed(1)}</span>`;
+      return;
+    }
+    const count = document.createElement("div");
+    count.classList.add("score");
+    count.innerHTML = `<span>${objectWithCount.gamer.toFixed(
+      1,
+    )}</span> : <span>${objectWithCount.computer.toFixed(1)}</span>`;
+    document.body.insertBefore(count, document.body.firstElementChild);
   }
 }

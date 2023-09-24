@@ -254,6 +254,16 @@ body {
   animation: 500ms fade ease-out;
 }
 
+.score {
+  color: wheat;
+  text-align: center;
+  padding-top: 50px;
+}
+
+.score span:last-child {
+  color: red;
+}
+
 @keyframes fade {
   from {
     opacity: 0;

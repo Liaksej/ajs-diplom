@@ -6,6 +6,7 @@ export interface ObjectForStore {
   level: LevelType;
   positions: PositionedCharacter[];
   isGameEnd: boolean;
+  maxScore: { gamer: number; computer: number };
 }
 
 export default class GameStateService {

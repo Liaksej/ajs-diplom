@@ -35,7 +35,7 @@ export default class GameController {
       ...this.creatGamerTeams(2, this.gameState.level),
     ];
   }
-  init() {
+  async init() {
     this.gamePlay.drawUi(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.gameState.positions);
     this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
@@ -44,6 +44,8 @@ export default class GameController {
     this.gamePlay.addNewGameListener(this.newGame.bind(this));
     this.gamePlay.addSaveGameListener(this.onSaveGame.bind(this));
     this.gamePlay.addLoadGameListener(this.onLoadGame.bind(this));
+    await this.gameState.setPreviousScores();
+    await this.updateMaxScores();
   }
 
   private async onCellClick(index: number) {
@@ -72,7 +74,7 @@ export default class GameController {
       position === undefined &&
       selectedCharacter?.moveField.includes(index)
     ) {
-      this.changeCell(selectedCharacter, index);
+      await this.changeCell(selectedCharacter, index);
       return;
     }
 
@@ -98,6 +100,7 @@ export default class GameController {
     );
     this.newLevel();
     this.gamePlay.redrawPositions(this.gameState.positions);
+    await this.updateMaxScores();
 
     this.selectedCellsChecker(charactersCount);
     this.gameState.from(this.gameState);
@@ -107,7 +110,10 @@ export default class GameController {
     }
   }
 
-  private changeCell(selectedCharacter: PositionedCharacter, index: number) {
+  private async changeCell(
+    selectedCharacter: PositionedCharacter,
+    index: number,
+  ) {
     selectedCharacter?.changePosition(index);
     if (
       ["swordsman", "bowman", "magician"].includes(
@@ -119,6 +125,7 @@ export default class GameController {
     }
     this.gameState.from(this.gameState);
     this.gamePlay.redrawPositions(this.gameState.positions);
+    await this.updateMaxScores();
 
     if (this.gameState.turn === "computer") {
       this.computerPass();
@@ -314,10 +321,10 @@ export default class GameController {
    *
    * @return {void}
    */
-  private moveTowardsEnemy(
+  private async moveTowardsEnemy(
     gamer: PositionedCharacter[],
     computer: PositionedCharacter[],
-  ): void {
+  ): Promise<void> {
     const boardSize = this.gamePlay.boardSize;
 
     const nearestEnemy: {
@@ -363,7 +370,7 @@ export default class GameController {
 
         return distanceToTarget < distanceToClosest ? point : closest;
       });
-      this.changeCell(nearestEnemy.computerPosition, nearestPosition);
+      await this.changeCell(nearestEnemy.computerPosition, nearestPosition);
       this.selectedCellsChecker();
     }
   }
@@ -387,7 +394,7 @@ export default class GameController {
       return this.gamePlay.deselectEnemyCell();
     }
   }
-  private newLevel() {
+  private async newLevel() {
     const checkEnemyTeam = this.gameState.positions.filter((position) =>
       ["undead", "daemon", "vampire"].includes(position.character.type),
     );
@@ -421,6 +428,7 @@ export default class GameController {
         ...this.creatGamerTeams(1 + nextLevel, nextLevel, restPlayerTeam),
       ];
       this.gamePlay.changeTheme(this.themesSelector[nextLevel - 1]);
+      await this.gameState.setPreviousScores();
 
       this.gamePlay.deselectAllCells();
     }
@@ -433,7 +441,7 @@ export default class GameController {
     this.gameState.positions = [];
   }
 
-  private newGame() {
+  private async newGame() {
     this.gameState = new GameState();
     this.gameState.positions = [
       ...this.creatEnemyTeams(2, this.gameState.level),
@@ -441,6 +449,8 @@ export default class GameController {
     ];
     this.gamePlay.changeTheme(this.themesSelector[0]);
     this.gamePlay.redrawPositions(this.gameState.positions);
+    await this.gameState.setPreviousScores();
+    await this.updateMaxScores();
     this.gamePlay.deselectAllCells();
   }
 
@@ -450,16 +460,25 @@ export default class GameController {
       level: this.gameState.level,
       positions: this.gameState.positions,
       isGameEnd: this.gameState.isGameEnd,
+      maxScore: this.gameState.maxScore,
     };
 
     this.stateService.save(objectForSave);
   }
 
-  private onLoadGame() {
+  private async onLoadGame() {
     this.gameState.loadData(this.stateService.load());
 
     this.gamePlay.deselectAllCells();
     this.gamePlay.redrawPositions(this.gameState.positions);
+    await this.gameState.setPreviousScores();
+    await this.updateMaxScores();
     this.gamePlay.changeTheme(this.themesSelector[this.gameState.level - 1]);
+  }
+
+  private async updateMaxScores() {
+    await this.gameState.getMaxScore();
+
+    this.gamePlay.drawScore(this.gameState.maxScore);
   }
 }
