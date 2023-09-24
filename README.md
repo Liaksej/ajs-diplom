@@ -1,6 +1,6 @@
 # Курсовая работа к курсу «Продвинутый JavaScript». Retro Game
 
----
+
 [![Build status](https://ci.appveyor.com/api/projects/status/plhw7nubgdf7959i?svg=true)](https://ci.appveyor.com/project/Liaksej/ajs-diplom)
 
 ### Запуск игры: https://liaksej.github.io/ajs-diplom/
