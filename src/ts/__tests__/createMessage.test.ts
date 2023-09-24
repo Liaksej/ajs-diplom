@@ -4,8 +4,15 @@ jest.mock("../app", () => {
 import GamePlay from "../GamePlay";
 import GameStateService from "../GameStateService";
 import GameController from "../GameController";
+import GameState from "../GameState";
 
 import { Bowman } from "../characters/Bowman";
+
+jest.mock("../GameState", () => {
+  return jest.fn().mockImplementation(() => {
+    return { calculateOverallScore: () => Promise.resolve(100) };
+  });
+});
 
 test("1 Method createMessage should create a correct message for character at given position", () => {
   const gameCtrl = new GameController(
