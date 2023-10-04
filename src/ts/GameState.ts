@@ -11,31 +11,23 @@ import { ObjectForStore } from "./GameStateService";
 type team = "gamer" | "computer";
 
 export default class GameState {
-  private _turn: "gamer" | "computer";
-  private _level: LevelType;
-  private _positions: PositionedCharacter[];
-  private _isGameEnd: boolean;
+  public turn: "gamer" | "computer";
+  public level: LevelType;
+  public positions: PositionedCharacter[];
+  public isGameEnd: boolean;
   private previousScores: { gamer: number; computer: number };
-  private _maxScore: { gamer: number; computer: number };
+  public maxScore: { gamer: number; computer: number };
 
   constructor() {
-    this._turn = "gamer";
-    this._level = 1;
-    this._positions = [];
-    this._isGameEnd = false;
+    this.turn = "gamer";
+    this.level = 1;
+    this.positions = [];
+    this.isGameEnd = false;
     this.previousScores = { gamer: 0, computer: 0 };
-    this._maxScore = {
+    this.maxScore = {
       gamer: 0,
       computer: 0,
     };
-  }
-
-  get maxScore(): { gamer: number; computer: number } {
-    return this._maxScore;
-  }
-
-  set maxScore(value: { gamer: number; computer: number }) {
-    this._maxScore = value;
   }
 
   async setPreviousScores() {
@@ -66,40 +58,8 @@ export default class GameState {
     this.maxScore = { gamer: scoreGamer, computer: scoreComputer };
   }
 
-  get positions(): PositionedCharacter[] {
-    return this._positions;
-  }
-
-  set positions(value: PositionedCharacter[]) {
-    this._positions = value;
-  }
-
-  get level(): LevelType {
-    return this._level;
-  }
-
-  set level(value: LevelType) {
-    this._level = value;
-  }
-
-  get isGameEnd(): boolean {
-    return this._isGameEnd;
-  }
-
-  set isGameEnd(value: boolean) {
-    this._isGameEnd = value;
-  }
-
-  get turn(): "gamer" | "computer" {
-    return this._turn;
-  }
-
-  set turn(value: "gamer" | "computer") {
-    this._turn = value;
-  }
-
   from(object: GameState) {
-    this.turn = object._turn === "gamer" ? "computer" : "gamer";
+    this.turn = object.turn === "gamer" ? "computer" : "gamer";
   }
 
   loadData(objectForLoad: ObjectForStore) {

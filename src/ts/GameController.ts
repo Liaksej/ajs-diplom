@@ -98,7 +98,7 @@ export default class GameController {
     this.gameState.positions = this.gameState.positions.filter(
       (position) => position.character.health > 0,
     );
-    this.newLevel();
+    await this.newLevel();
     this.gamePlay.redrawPositions(this.gameState.positions);
     await this.updateMaxScores();
 
