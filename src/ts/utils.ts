@@ -1,3 +1,5 @@
+import Character from "./Character";
+
 /**
  * @param index - индекс поля
  * @param boardSize - размер квадратного поля (в длину или ширину)
@@ -58,29 +60,21 @@ export function calcHealthLevel(health: number) {
 }
 
 export function checkPass(
-  character: string,
+  character: Character,
   boardSize: number,
   position: number,
 ) {
-  const pass = ["swordsman", "undead"].includes(character)
-    ? 4
-    : ["bowman", "vampire"].includes(character)
-    ? 2
-    : 1;
+  const pass = character.passArea;
 
   return possiblePassArrayGenerator(pass, boardSize, position);
 }
 
 export function checkAttack(
-  character: string,
+  character: Character,
   boardSize: number,
   position: number,
 ) {
-  const pass = ["swordsman", "undead"].includes(character)
-    ? 1
-    : ["bowman", "vampire"].includes(character)
-    ? 2
-    : 4;
+  const pass = character.attackArea;
 
   return possibleAttackArrayGenerator(pass, boardSize, position);
 }

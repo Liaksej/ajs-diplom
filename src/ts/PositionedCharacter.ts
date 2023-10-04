@@ -13,30 +13,22 @@ export default class PositionedCharacter {
     this.position = position;
     this.boardSize = BOARD_SIZE;
     this.attackField = checkAttack(
-      this.character.type,
+      this.character,
       this.boardSize,
       this.position,
     );
-    this.moveField = checkPass(
-      this.character.type,
-      this.boardSize,
-      this.position,
-    );
+    this.moveField = checkPass(this.character, this.boardSize, this.position);
   }
 
   changePosition(index: number) {
     if (index !== this.position) {
       this.position = index;
       this.attackField = checkAttack(
-        this.character.type,
+        this.character,
         this.boardSize,
         this.position,
       );
-      this.moveField = checkPass(
-        this.character.type,
-        this.boardSize,
-        this.position,
-      );
+      this.moveField = checkPass(this.character, this.boardSize, this.position);
     }
   }
 }

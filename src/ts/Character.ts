@@ -29,6 +29,8 @@ export interface CharacterInterface {
   defence: number;
   health: number;
   type: CharacterType;
+  passArea: number;
+  attackArea: number;
 
   levelUp(level: LevelType): void;
 
@@ -41,6 +43,8 @@ export default class Character implements CharacterInterface {
   defence;
   health;
   type;
+  passArea;
+  attackArea;
 
   constructor(level: LevelType, type: CharacterType) {
     this.level = level;
@@ -48,6 +52,8 @@ export default class Character implements CharacterInterface {
     this.defence = 0;
     this.health = 50;
     this.type = type;
+    this.passArea = 0;
+    this.attackArea = 0;
 
     if (new.target === Character) {
       throw new TypeError("Cannot construct Character instances directly");

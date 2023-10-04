@@ -13,6 +13,7 @@ import cursors from "./cursors";
 import GameState from "./GameState";
 import { getEuclideanDistance, getTeamCells } from "./utils";
 import Character, { LevelType } from "./Character";
+import Team from "./Team";
 
 export default class GameController {
   gamePlay: GamePlay;
@@ -54,10 +55,7 @@ export default class GameController {
     const selectedCharacter = this.getSelectedCharacter();
     const position = this.getPosition(index);
 
-    if (
-      position &&
-      ["swordsman", "bowman", "magician"].includes(position.character.type)
-    ) {
+    if (position && Team.checkGamerCharacters(position.character.type)) {
       this.gamePlay.selectCell(index);
       return;
     }
@@ -65,7 +63,7 @@ export default class GameController {
     if (
       position &&
       selectedCharacter?.attackField.includes(index) &&
-      ["undead", "vampire", "daemon"].includes(position.character.type)
+      Team.checkComputerCharacters(position.character.type)
     ) {
       return this.causeDamage(selectedCharacter, position, index);
     }
@@ -115,11 +113,7 @@ export default class GameController {
     index: number,
   ) {
     selectedCharacter?.changePosition(index);
-    if (
-      ["swordsman", "bowman", "magician"].includes(
-        selectedCharacter?.character.type,
-      )
-    ) {
+    if (Team.checkGamerCharacters(selectedCharacter?.character.type)) {
       this.gamePlay.deselectAllCells();
       this.gamePlay.selectCell(index);
     }
@@ -140,16 +134,14 @@ export default class GameController {
     if (position) {
       this.gamePlay.showCellTooltip(this.createTooltipMessage(index), index);
 
-      if (
-        ["swordsman", "bowman", "magician"].includes(position.character.type)
-      ) {
+      if (Team.checkGamerCharacters(position.character.type)) {
         this.gamePlay.setCursor(cursors.pointer);
       }
 
       if (selected) {
         if (
           this.gamePlay.checkSelectedCell() &&
-          ["daemon", "vampire", "undead"].includes(position.character.type)
+          Team.checkComputerCharacters(position.character.type)
         ) {
           if (selected.attackField.includes(index)) {
             this.gamePlay.setCursor(cursors.crosshair);
@@ -251,11 +243,11 @@ export default class GameController {
    */
   private computerPass() {
     const gamer = this.gameState.positions.filter((position) =>
-      ["bowman", "swordsman", "magician"].includes(position.character.type),
+      Team.checkGamerCharacters(position.character.type),
     );
 
     const computer = this.gameState.positions.filter((position) =>
-      ["undead", "vampire", "daemon"].includes(position.character.type),
+      Team.checkComputerCharacters(position.character.type),
     );
 
     this.computerAttackLogic(gamer, computer) ||
@@ -396,10 +388,10 @@ export default class GameController {
   }
   private async newLevel() {
     const checkEnemyTeam = this.gameState.positions.filter((position) =>
-      ["undead", "daemon", "vampire"].includes(position.character.type),
+      Team.checkComputerCharacters(position.character.type),
     );
     const checkPlayerTeam = this.gameState.positions.filter((position) =>
-      ["bowman", "swordsman", "magician"].includes(position.character.type),
+      Team.checkGamerCharacters(position.character.type),
     );
     if (checkPlayerTeam.length === 0) {
       return this.gameOver();
